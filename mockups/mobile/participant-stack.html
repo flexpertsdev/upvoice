@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>upVoice - Participant View (Stack)</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-600: #475467;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --success-400: #32D583;
+            --error-500: #F04438;
+            --error-400: #F97066;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-900);
+            color: var(--gray-900);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Header */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: var(--spacing-md);
+            background: linear-gradient(to bottom, rgba(16, 24, 40, 0.9), transparent);
+        }
+        
+        .session-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        
+        .session-title {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .participant-count {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .participant-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-500);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        /* Card Stack Container */
+        .stack-container {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+            padding: var(--spacing-lg);
+        }
+        
+        /* Message Cards */
+        .message-card {
+            position: absolute;
+            width: calc(100% - 48px);
+            max-width: 400px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: var(--spacing-xl);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: grab;
+            transform-origin: center center;
+        }
+        
+        .message-card.dragging {
+            cursor: grabbing;
+            transition: none;
+        }
+        
+        /* Stack positioning */
+        .message-card:nth-child(1) {
+            z-index: 4;
+            transform: translateZ(0px) scale(1);
+        }
+        
+        .message-card:nth-child(2) {
+            z-index: 3;
+            transform: translateZ(-50px) translateY(20px) scale(0.95);
+            opacity: 0.9;
+        }
+        
+        .message-card:nth-child(3) {
+            z-index: 2;
+            transform: translateZ(-100px) translateY(40px) scale(0.9);
+            opacity: 0.8;
+        }
+        
+        .message-card:nth-child(4) {
+            z-index: 1;
+            transform: translateZ(-150px) translateY(60px) scale(0.85);
+            opacity: 0.7;
+        }
+        
+        /* Card content */
+        .message-content {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-lg);
+            min-height: 120px;
+        }
+        
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .message-id {
+            font-family: monospace;
+        }
+        
+        .reply-count {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        /* Voting UI */
+        .voting-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            padding: var(--spacing-lg);
+        }
+        
+        .slider-container {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .slider-track {
+            height: 60px;
+            background: var(--gray-100);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--gray-200);
+        }
+        
+        .slider-fill {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            right: 50%;
+            background: var(--gray-300);
+            transition: all 0.2s ease-out;
+        }
+        
+        .slider-fill.positive {
+            left: 50%;
+            background: linear-gradient(to right, var(--success-400), var(--success-500));
+        }
+        
+        .slider-fill.negative {
+            right: 50%;
+            background: linear-gradient(to left, var(--error-400), var(--error-500));
+        }
+        
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.2s ease-out;
+        }
+        
+        .slider-handle.dragging {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .vote-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-sm);
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        /* Swipe indicators */
+        .swipe-hint {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        
+        .swipe-hint.left {
+            left: var(--spacing-lg);
+            color: var(--error-500);
+        }
+        
+        .swipe-hint.right {
+            right: var(--spacing-lg);
+            color: var(--success-500);
+        }
+        
+        .message-card.tilted-left .swipe-hint.left,
+        .message-card.tilted-right .swipe-hint.right {
+            opacity: 1;
+        }
+        
+        /* Write Message Button */
+        .write-button {
+            position: fixed;
+            bottom: 140px;
+            right: var(--spacing-lg);
+            width: 56px;
+            height: 56px;
+            background: var(--primary-500);
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 4px 12px rgba(46, 144, 250, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 90;
+        }
+        
+        .write-button:active {
+            transform: scale(0.95);
+        }
+        
+        .write-button.disabled {
+            background: var(--gray-300);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        
+        /* Queue indicator */
+        .queue-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--error-500);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        /* Topic transition countdown */
+        .countdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        
+        .countdown-overlay.active {
+            display: flex;
+        }
+        
+        .countdown-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .countdown-message {
+            font-size: 18px;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.9;
+        }
+        
+        .countdown-timer {
+            font-size: 72px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .countdown-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto var(--spacing-lg);
+        }
+        
+        .countdown-ring circle {
+            fill: none;
+            stroke-width: 4;
+        }
+        
+        .countdown-ring .ring-bg {
+            stroke: rgba(255, 255, 255, 0.2);
+        }
+        
+        .countdown-ring .ring-progress {
+            stroke: white;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 0;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 1s linear;
+        }
+        
+        /* Thread indicator */
+        .thread-preview {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-top: var(--spacing-md);
+            font-size: 14px;
+            color: var(--gray-600);
+            cursor: pointer;
+        }
+        
+        .thread-preview:active {
+            background: var(--gray-100);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="session-info">
+            <div class="session-title">Team Retrospective</div>
+            <div class="participant-count">
+                <span class="participant-dot"></span>
+                <span>42 active</span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Card Stack -->
+    <div class="stack-container" id="stackContainer">
+        <!-- Card 1 (Top) -->
+        <div class="message-card" data-card-index="0">
+            <div class="swipe-hint left">✗</div>
+            <div class="swipe-hint right">✓</div>
+            <div class="message-meta">
+                <span class="message-id">MSG-156</span>
+                <span class="reply-count">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 3.58 1 6.5S4.13 12 8 12c.83 0 1.62-.13 2.35-.36l2.15 1.36V10.5c1.16-.85 2-2.06 2-3.5 0-2.92-3.13-5.5-7-5.5z"/>
+                    </svg>
+                    3 replies
+                </span>
+            </div>
+            <div class="message-content">
+                "The daily standups have been really helpful for keeping everyone aligned, but I think 30 minutes is too long. Could we try timeboxing to 15 minutes?"
+            </div>
+            <div class="thread-preview">
+                💬 "Agree! Maybe we could..." <span style="color: var(--primary-600);">View thread</span>
+            </div>
+        </div>
+        
+        <!-- Card 2 -->
+        <div class="message-card" data-card-index="1">
+            <div class="message-meta">
+                <span class="message-id">MSG-157</span>
+                <span class="reply-count">No replies yet</span>
+            </div>
+            <div class="message-content">
+                "We need better documentation for our internal tools. New team members struggle to get up to speed quickly."
+            </div>
+        </div>
+        
+        <!-- Card 3 -->
+        <div class="message-card" data-card-index="2">
+            <div class="message-meta">
+                <span class="message-id">MSG-158</span>
+                <span class="reply-count">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 1C4.13 1 1 3.58 1 6.5S4.13 12 8 12c.83 0 1.62-.13 2.35-.36l2.15 1.36V10.5c1.16-.85 2-2.06 2-3.5 0-2.92-3.13-5.5-7-5.5z"/>
+                    </svg>
+                    1 reply
+                </span>
+            </div>
+            <div class="message-content">
+                "The new deployment process is working great! Much more reliable than before."
+            </div>
+        </div>
+        
+        <!-- Card 4 -->
+        <div class="message-card" data-card-index="3">
+            <div class="message-meta">
+                <span class="message-id">MSG-159</span>
+                <span class="reply-count">No replies yet</span>
+            </div>
+            <div class="message-content">
+                "Can we establish clearer ownership for different parts of the codebase?"
+            </div>
+        </div>
+    </div>
+    
+    <!-- Voting Area -->
+    <div class="voting-area">
+        <div class="slider-container">
+            <div class="slider-track">
+                <div class="slider-fill" id="sliderFill"></div>
+                <div class="slider-handle" id="sliderHandle">
+                    <span class="vote-value" id="voteValue">—</span>
+                </div>
+            </div>
+            <div class="slider-labels">
+                <span>Disagree</span>
+                <span>Neutral</span>
+                <span>Agree</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Write Button -->
+    <button class="write-button" id="writeButton">
+        <span class="queue-badge">4</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+    </button>
+    
+    <!-- Countdown Overlay -->
+    <div class="countdown-overlay" id="countdownOverlay">
+        <div class="countdown-content">
+            <div class="countdown-message">Topic change in...</div>
+            <svg class="countdown-ring" viewBox="0 0 120 120">
+                <circle class="ring-bg" cx="60" cy="60" r="58"/>
+                <circle class="ring-progress" id="countdownRing" cx="60" cy="60" r="58"/>
+            </svg>
+            <div class="countdown-timer" id="countdownTimer">30</div>
+        </div>
+    </div>
+    
+    <script>
+        // Card swipe mechanics
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.message-card');
+        const stackContainer = document.getElementById('stackContainer');
+        
+        let startX = null;
+        let startY = null;
+        let currentX = null;
+        let currentY = null;
+        let cardBeingDragged = null;
+        
+        // Touch events for cards
+        cards.forEach(card => {
+            card.addEventListener('touchstart', handleStart, { passive: true });
+            card.addEventListener('touchmove', handleMove, { passive: true });
+            card.addEventListener('touchend', handleEnd);
+            
+            // Mouse events for testing
+            card.addEventListener('mousedown', handleStart);
+            card.addEventListener('mousemove', handleMove);
+            card.addEventListener('mouseup', handleEnd);
+        });
+        
+        function handleStart(e) {
+            if (e.target.closest('.thread-preview')) return;
+            
+            const card = e.currentTarget;
+            if (card.dataset.cardIndex !== '0') return; // Only top card can be swiped
+            
+            cardBeingDragged = card;
+            card.classList.add('dragging');
+            
+            startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        }
+        
+        function handleMove(e) {
+            if (!cardBeingDragged) return;
+            
+            currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            const deltaX = currentX - startX;
+            const deltaY = currentY - startY;
+            
+            // Apply transform
+            const rotation = deltaX * 0.1;
+            cardBeingDragged.style.transform = `translateX(${deltaX}px) translateY(${deltaY}px) rotate(${rotation}deg)`;
+            
+            // Update tilt classes for visual feedback
+            cardBeingDragged.classList.remove('tilted-left', 'tilted-right');
+            if (deltaX < -50) {
+                cardBeingDragged.classList.add('tilted-left');
+            } else if (deltaX > 50) {
+                cardBeingDragged.classList.add('tilted-right');
+            }
+        }
+        
+        function handleEnd(e) {
+            if (!cardBeingDragged) return;
+            
+            const deltaX = currentX - startX;
+            const threshold = 100;
+            
+            if (Math.abs(deltaX) > threshold) {
+                // Card swiped far enough
+                const direction = deltaX > 0 ? 'right' : 'left';
+                animateCardOff(cardBeingDragged, direction);
+                
+                // Log vote (simplified)
+                const voteValue = direction === 'right' ? 0.8 : 0.2;
+                console.log('Vote recorded:', voteValue);
+            } else {
+                // Snap back
+                cardBeingDragged.style.transform = '';
+                cardBeingDragged.classList.remove('tilted-left', 'tilted-right');
+            }
+            
+            cardBeingDragged.classList.remove('dragging');
+            cardBeingDragged = null;
+            startX = null;
+            startY = null;
+            currentX = null;
+            currentY = null;
+        }
+        
+        function animateCardOff(card, direction) {
+            const translateX = direction === 'right' ? window.innerWidth : -window.innerWidth;
+            card.style.transform = `translateX(${translateX}px) rotate(${direction === 'right' ? 45 : -45}deg)`;
+            card.style.opacity = '0';
+            
+            setTimeout(() => {
+                card.remove();
+                updateCardStack();
+            }, 300);
+        }
+        
+        function updateCardStack() {
+            const remainingCards = document.querySelectorAll('.message-card');
+            remainingCards.forEach((card, index) => {
+                card.dataset.cardIndex = index.toString();
+            });
+            
+            // Update queue badge
+            const badge = document.querySelector('.queue-badge');
+            badge.textContent = remainingCards.length;
+        }
+        
+        // Slider voting
+        const sliderHandle = document.getElementById('sliderHandle');
+        const sliderFill = document.getElementById('sliderFill');
+        const voteValue = document.getElementById('voteValue');
+        const sliderTrack = document.querySelector('.slider-track');
+        
+        let isSliding = false;
+        let sliderStartX = null;
+        let currentSliderX = null;
+        
+        // Touch events for slider
+        sliderHandle.addEventListener('touchstart', startSlide, { passive: true });
+        sliderTrack.addEventListener('touchstart', startSlide, { passive: true });
+        document.addEventListener('touchmove', moveSlide, { passive: true });
+        document.addEventListener('touchend', endSlide);
+        
+        // Mouse events for testing
+        sliderHandle.addEventListener('mousedown', startSlide);
+        sliderTrack.addEventListener('mousedown', startSlide);
+        document.addEventListener('mousemove', moveSlide);
+        document.addEventListener('mouseup', endSlide);
+        
+        function startSlide(e) {
+            isSliding = true;
+            sliderHandle.classList.add('dragging');
+            sliderStartX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            
+            // If clicking on track, jump to position
+            if (e.target === sliderTrack || e.target === sliderFill) {
+                const rect = sliderTrack.getBoundingClientRect();
+                const x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+                updateSliderPosition(x - rect.left, rect.width);
+            }
+        }
+        
+        function moveSlide(e) {
+            if (!isSliding) return;
+            
+            const rect = sliderTrack.getBoundingClientRect();
+            const x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            updateSliderPosition(x - rect.left, rect.width);
+        }
+        
+        function endSlide() {
+            if (!isSliding) return;
+            
+            isSliding = false;
+            sliderHandle.classList.remove('dragging');
+            
+            // Animate to voted state (example)
+            setTimeout(() => {
+                voteValue.textContent = '✓';
+            }, 200);
+        }
+        
+        function updateSliderPosition(x, width) {
+            const percent = Math.max(0, Math.min(1, x / width));
+            const value = (percent - 0.5) * 2; // Convert to -1 to 1 range
+            
+            sliderHandle.style.left = `${percent * 100}%`;
+            
+            // Update fill
+            sliderFill.classList.remove('positive', 'negative');
+            if (value > 0) {
+                sliderFill.classList.add('positive');
+                sliderFill.style.right = `${(1 - percent) * 100}%`;
+                sliderFill.style.left = '50%';
+            } else if (value < 0) {
+                sliderFill.classList.add('negative');
+                sliderFill.style.left = `${percent * 100}%`;
+                sliderFill.style.right = '50%';
+            } else {
+                sliderFill.style.left = '50%';
+                sliderFill.style.right = '50%';
+            }
+            
+            // Update vote display
+            if (Math.abs(value) < 0.1) {
+                voteValue.textContent = '—';
+            } else {
+                voteValue.textContent = Math.round(Math.abs(value) * 10) / 10;
+            }
+        }
+        
+        // Countdown simulation
+        function startCountdown() {
+            const overlay = document.getElementById('countdownOverlay');
+            const timer = document.getElementById('countdownTimer');
+            const ring = document.getElementById('countdownRing');
+            const writeBtn = document.getElementById('writeButton');
+            
+            overlay.classList.add('active');
+            writeBtn.classList.add('disabled');
+            
+            let seconds = 30;
+            const interval = setInterval(() => {
+                seconds--;
+                timer.textContent = seconds;
+                
+                // Update ring progress
+                const offset = (seconds / 30) * 377;
+                ring.style.strokeDashoffset = 377 - offset;
+                
+                if (seconds <= 0) {
+                    clearInterval(interval);
+                    overlay.classList.remove('active');
+                    writeBtn.classList.remove('disabled');
+                    // Topic would change here
+                }
+            }, 1000);
+        }
+        
+        // Simulate countdown after 10 seconds for demo
+        // setTimeout(startCountdown, 10000);
+    </script>
+</body>
+</html>

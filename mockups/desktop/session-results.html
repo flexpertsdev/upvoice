@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>upVoice - Session Results & Analysis</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-600: #475467;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --success-100: #D1FADF;
+            --error-500: #F04438;
+            --error-100: #FEE4E2;
+            --warning-500: #F79009;
+            --warning-100: #FEF0C7;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            --spacing-3xl: 64px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--spacing-md) var(--spacing-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-600);
+        }
+        
+        .session-badge {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 16px;
+            font-size: 14px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background: var(--primary-600);
+        }
+        
+        .button-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .button-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-xl) var(--spacing-lg);
+        }
+        
+        /* Session Summary */
+        .session-summary {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .summary-header {
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .session-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .session-meta {
+            display: flex;
+            gap: var(--spacing-lg);
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        /* Key Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .metric-card {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        .metric-trend {
+            font-size: 12px;
+            margin-top: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .trend-up {
+            color: var(--success-500);
+        }
+        
+        .trend-down {
+            color: var(--error-500);
+        }
+        
+        /* Analysis Sections */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .analysis-section {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            padding: var(--spacing-xl);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        /* Key Themes */
+        .theme-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .theme-item {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+        }
+        
+        .theme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .theme-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .theme-stats {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        .theme-messages {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        
+        .message-quote {
+            background: white;
+            border-left: 3px solid var(--primary-500);
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-top: var(--spacing-sm);
+            font-style: italic;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+        
+        /* Sentiment Chart */
+        .sentiment-chart {
+            height: 200px;
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100%;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .chart-bar {
+            width: 60px;
+            background: var(--primary-500);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .chart-bar:hover {
+            background: var(--primary-600);
+        }
+        
+        .bar-positive {
+            background: var(--success-500);
+        }
+        
+        .bar-neutral {
+            background: var(--gray-400);
+        }
+        
+        .bar-negative {
+            background: var(--error-500);
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: var(--gray-600);
+            white-space: nowrap;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Top Messages */
+        .message-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .message-content {
+            font-size: 14px;
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.5;
+        }
+        
+        .message-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+        
+        .vote-score {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .vote-bar {
+            width: 60px;
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .vote-fill {
+            height: 100%;
+            background: var(--primary-500);
+        }
+        
+        /* AI Insights */
+        .insights-section {
+            background: var(--primary-50);
+            border: 1px solid var(--primary-200);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .insight-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--primary-100);
+            color: var(--primary-700);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .insight-card {
+            background: white;
+            border-radius: 8px;
+            padding: var(--spacing-lg);
+        }
+        
+        .insight-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            color: var(--gray-900);
+        }
+        
+        .insight-text {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        
+        /* Action Items */
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-item {
+            display: flex;
+            align-items: start;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) 0;
+        }
+        
+        .action-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-300);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-checkbox:hover {
+            border-color: var(--primary-500);
+        }
+        
+        .action-text {
+            font-size: 14px;
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+        
+        /* Export Options */
+        .export-section {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+        
+        /* Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .icon-sm {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">upVoice</div>
+                <div class="session-badge">Session Complete</div>
+                <h1 style="font-size: 18px; font-weight: 600;">Q4 Team Retrospective - Results</h1>
+            </div>
+            <div class="header-actions">
+                <button class="button button-secondary">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-width="1.5"/>
+                    </svg>
+                    Share
+                </button>
+                <button class="button button-primary">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M7 10l5 5 5-5M7 5l5 5 5-5" stroke-width="1.5"/>
+                    </svg>
+                    Export Report
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Session Summary -->
+        <div class="session-summary">
+            <div class="summary-header">
+                <h2 class="session-title">Q4 Team Retrospective</h2>
+                <div class="session-meta">
+                    <div class="meta-item">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM4 8h12v8H4V8z"/>
+                        </svg>
+                        <span>Oct 25, 2024 • 2:00 PM - 3:15 PM</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                        </svg>
+                        <span>48 participants (87% of team)</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                        <span>75 minutes</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">234</div>
+                    <div class="metric-label">Total Messages</div>
+                    <div class="metric-trend trend-up">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5l5 5H5l5-5z"/>
+                        </svg>
+                        +45% vs last session
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">4.8</div>
+                    <div class="metric-label">Messages per Person</div>
+                    <div class="metric-trend trend-up">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5l5 5H5l5-5z"/>
+                        </svg>
+                        +0.9 vs average
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">92%</div>
+                    <div class="metric-label">Engagement Rate</div>
+                    <div class="metric-trend trend-up">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5l5 5H5l5-5z"/>
+                        </svg>
+                        Excellent
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.76</div>
+                    <div class="metric-label">Avg Agreement</div>
+                    <div class="metric-trend">
+                        <span style="color: var(--gray-500);">Healthy debate</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Insights -->
+        <div class="insights-section">
+            <div class="insight-badge">
+                <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13 7h-2v2h2V7zm0 4h-2v6h2v-6zm4-9H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H7V4h10v14z"/>
+                </svg>
+                AI-Generated Insights
+            </div>
+            
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h3 class="insight-title">🎯 Key Takeaway</h3>
+                    <p class="insight-text">The team strongly values remote work flexibility (mentioned in 42% of messages) but struggles with cross-team communication. This presents an opportunity to implement better async communication tools.</p>
+                </div>
+                <div class="insight-card">
+                    <h3 class="insight-title">⚠️ Action Required</h3>
+                    <p class="insight-text">Meeting efficiency was a recurring concern (18 mentions). Consider implementing stricter meeting agendas and exploring async alternatives for status updates.</p>
+                </div>
+                <div class="insight-card">
+                    <h3 class="insight-title">💡 Quick Win</h3>
+                    <p class="insight-text">Documentation gaps are causing repeated explanations. A dedicated documentation sprint could save 5-7 hours per week across the team.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Analysis -->
+        <div class="analysis-grid">
+            <!-- Key Themes -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2 class="section-title">Key Themes</h2>
+                    <span style="font-size: 14px; color: var(--gray-500);">Ranked by impact</span>
+                </div>
+                
+                <div class="theme-list">
+                    <div class="theme-item">
+                        <div class="theme-header">
+                            <h3 class="theme-name">Remote Work & Flexibility</h3>
+                            <div class="theme-stats">
+                                <span>98 messages</span>
+                                <span>•</span>
+                                <span>0.89 agreement</span>
+                            </div>
+                        </div>
+                        <p class="theme-messages">Team overwhelmingly supports maintaining flexible work arrangements. Key benefits cited: better work-life balance, increased productivity, reduced commute stress.</p>
+                        <div class="message-quote">"Remote work has transformed my productivity. I can focus deeply without office interruptions and still collaborate effectively online."</div>
+                    </div>
+                    
+                    <div class="theme-item">
+                        <div class="theme-header">
+                            <h3 class="theme-name">Communication Challenges</h3>
+                            <div class="theme-stats">
+                                <span>67 messages</span>
+                                <span>•</span>
+                                <span>0.72 agreement</span>
+                            </div>
+                        </div>
+                        <p class="theme-messages">Cross-team communication needs improvement. Issues include: unclear ownership, delayed responses, information silos between departments.</p>
+                        <div class="message-quote">"We need a better system for knowing who's working on what and when they're available for quick questions."</div>
+                    </div>
+                    
+                    <div class="theme-item">
+                        <div class="theme-header">
+                            <h3 class="theme-name">Meeting Overload</h3>
+                            <div class="theme-stats">
+                                <span>43 messages</span>
+                                <span>•</span>
+                                <span>0.81 agreement</span>
+                            </div>
+                        </div>
+                        <p class="theme-messages">Too many meetings disrupting deep work. Suggestions include: meeting-free blocks, async updates, stricter agendas.</p>
+                        <div class="message-quote">"Our daily standups often run 30+ minutes. We should stick to the 15-minute limit or try async updates."</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sentiment Analysis -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2 class="section-title">Sentiment Analysis</h2>
+                </div>
+                
+                <div class="sentiment-chart">
+                    <div class="chart-bars">
+                        <div class="chart-bar bar-positive" style="height: 65%;">
+                            <span class="bar-value">65%</span>
+                            <span class="bar-label">Positive</span>
+                        </div>
+                        <div class="chart-bar bar-neutral" style="height: 25%;">
+                            <span class="bar-value">25%</span>
+                            <span class="bar-label">Neutral</span>
+                        </div>
+                        <div class="chart-bar bar-negative" style="height: 10%;">
+                            <span class="bar-value">10%</span>
+                            <span class="bar-label">Negative</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: var(--gray-50); border-radius: 8px; padding: var(--spacing-md); margin-top: var(--spacing-lg);">
+                    <p style="font-size: 14px; color: var(--gray-700); line-height: 1.5;">
+                        Overall sentiment is <strong>strongly positive</strong>. The team appreciates current flexibility and culture, with concerns focused on operational improvements rather than fundamental issues.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Messages & Action Items -->
+        <div class="analysis-grid">
+            <!-- Top Voted Messages -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2 class="section-title">Top Voted Messages</h2>
+                </div>
+                
+                <div class="message-card">
+                    <p class="message-content">"The transparency in decision-making lately has been fantastic. It makes me feel more connected to our mission and understand the 'why' behind changes."</p>
+                    <div class="message-stats">
+                        <span>MSG-089</span>
+                        <div class="vote-score">
+                            <span>0.94</span>
+                            <div class="vote-bar">
+                                <div class="vote-fill" style="width: 94%;"></div>
+                            </div>
+                            <span>45 votes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message-card">
+                    <p class="message-content">"We should have dedicated 'focus time' blocks where no meetings can be scheduled. Maybe 9-12 every day?"</p>
+                    <div class="message-stats">
+                        <span>MSG-142</span>
+                        <div class="vote-score">
+                            <span>0.91</span>
+                            <div class="vote-bar">
+                                <div class="vote-fill" style="width: 91%;"></div>
+                            </div>
+                            <span>42 votes</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message-card">
+                    <p class="message-content">"The new onboarding process is working great! New team members are productive much faster than before."</p>
+                    <div class="message-stats">
+                        <span>MSG-203</span>
+                        <div class="vote-score">
+                            <span>0.88</span>
+                            <div class="vote-bar">
+                                <div class="vote-fill" style="width: 88%;"></div>
+                            </div>
+                            <span>38 votes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recommended Actions -->
+            <div class="analysis-section">
+                <div class="section-header">
+                    <h2 class="section-title">Recommended Actions</h2>
+                </div>
+                
+                <div class="action-list">
+                    <div class="action-item">
+                        <div class="action-checkbox"></div>
+                        <div class="action-text">
+                            <strong>Implement "Focus Fridays"</strong> - No meetings allowed, dedicated to deep work (addresses 43 messages about meeting overload)
+                        </div>
+                    </div>
+                    
+                    <div class="action-item">
+                        <div class="action-checkbox"></div>
+                        <div class="action-text">
+                            <strong>Create team availability dashboard</strong> - Show who's online, in meetings, or in focus mode (addresses communication concerns)
+                        </div>
+                    </div>
+                    
+                    <div class="action-item">
+                        <div class="action-checkbox"></div>
+                        <div class="action-text">
+                            <strong>Documentation sprint</strong> - Dedicate 2 days to updating key processes and creating video walkthroughs
+                        </div>
+                    </div>
+                    
+                    <div class="action-item">
+                        <div class="action-checkbox"></div>
+                        <div class="action-text">
+                            <strong>Async standup trial</strong> - Test written updates for 2 weeks, measure time saved vs information quality
+                        </div>
+                    </div>
+                    
+                    <div class="action-item">
+                        <div class="action-checkbox"></div>
+                        <div class="action-text">
+                            <strong>Formalize remote work policy</strong> - Document flexibility guidelines to ensure consistency across teams
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Export Options -->
+        <div class="export-section">
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: var(--spacing-sm);">Share or Export Results</h3>
+            <p style="color: var(--gray-600); font-size: 14px;">Download the full report or share a summary with your team</p>
+            
+            <div class="export-buttons">
+                <button class="button button-secondary">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M9 12h6m-6 4h6m2 5H3a2 2 0 01-2-2V3a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-width="1.5"/>
+                    </svg>
+                    PDF Report
+                </button>
+                <button class="button button-secondary">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M3 10v10h10V10M3 10V6a3 3 0 013-3h8a3 3 0 013 3v4M3 10h14m0 0v10h-4V10" stroke-width="1.5"/>
+                    </svg>
+                    Executive Summary
+                </button>
+                <button class="button button-secondary">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M3 3h14v2H3V3zm0 4h14v10H3V7z" stroke-width="1.5"/>
+                    </svg>
+                    Raw Data (CSV)
+                </button>
+                <button class="button button-primary">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" stroke-width="1.5"/>
+                    </svg>
+                    Create Action Plan
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Animate charts on load
+        window.addEventListener('load', function() {
+            const bars = document.querySelectorAll('.chart-bar');
+            bars.forEach((bar, index) => {
+                const height = bar.style.height;
+                bar.style.height = '0';
+                setTimeout(() => {
+                    bar.style.transition = 'height 0.8s ease-out';
+                    bar.style.height = height;
+                }, index * 100);
+            });
+        });
+        
+        // Action item checkboxes
+        document.querySelectorAll('.action-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.style.background = this.style.background ? '' : 'var(--success-500)';
+                this.innerHTML = this.innerHTML ? '' : '<svg width="12" height="12" viewBox="0 0 20 20" fill="white"><path d="M7 10l3 3L17 6" stroke="white" stroke-width="3"/></svg>';
+            });
+        });
+    </script>
+</body>
+</html>

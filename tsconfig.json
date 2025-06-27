@@ -1,18 +1,35 @@
 {
   "compilerOptions": {
-    /* Language and Environment */
     "target": "ES2020",
+    "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
-    
-    /* Modules */
     "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
+    "isolatedModules": true,
     "noEmit": true,
-    
-    /* Path Aliases - Clean imports throughout the project */
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Path Aliases */
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -23,46 +40,10 @@
       "@types/*": ["src/types/*"],
       "@utils/*": ["src/utils/*"],
       "@config/*": ["src/config/*"],
-      "@assets/*": ["src/assets/*"],
-      "@pages/*": ["src/pages/*"]
-    },
-    
-    /* Type Checking - Strict mode for better type safety */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    
-    /* Interop Constraints */
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    
-    /* Skip Lib Check - Faster builds */
-    "skipLibCheck": true,
-    
-    /* Emit */
-    "isolatedModules": true,
-    "allowJs": false,
-    "incremental": true
-  },
-  "include": [
-    "src",
-    "vite.config.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "coverage",
-    "functions"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
+      "@styles/*": ["src/styles/*"],
+      "@assets/*": ["src/assets/*"]
     }
-  ]
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

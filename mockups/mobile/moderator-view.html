@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>upVoice - Moderator View</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-600: #475467;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --success-100: #D1FADF;
+            --error-500: #F04438;
+            --error-100: #FEE4E2;
+            --warning-500: #F79009;
+            --warning-100: #FEF0C7;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--spacing-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .session-info {
+            flex: 1;
+        }
+        
+        .session-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .session-code {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-family: monospace;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .icon-button {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .icon-button:active {
+            background: var(--gray-100);
+        }
+        
+        /* Tab Navigation */
+        .tab-nav {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            padding: 0 var(--spacing-md);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-sm);
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            color: var(--primary-600);
+            border-bottom-color: var(--primary-600);
+        }
+        
+        /* Content Container */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Live Stats */
+        .stats-section {
+            padding: var(--spacing-md);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        .stat-trend {
+            font-size: 11px;
+            margin-top: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .trend-up {
+            color: var(--success-500);
+        }
+        
+        /* Real-time Chart */
+        .chart-section {
+            background: white;
+            margin: var(--spacing-md);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: var(--spacing-md);
+            font-size: 11px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .chart-container {
+            height: 120px;
+            position: relative;
+            background: var(--gray-50);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(46, 144, 250, 0.1), transparent);
+            border-top: 2px solid var(--primary-500);
+        }
+        
+        /* Message Feed */
+        .messages-section {
+            padding: var(--spacing-md);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .filter-badge {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .message-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .message-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+        }
+        
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .message-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+        
+        .vote-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .vote-bar {
+            width: 40px;
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .vote-fill {
+            height: 100%;
+            background: var(--primary-500);
+        }
+        
+        .message-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .action-button {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--gray-100);
+            border: none;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+        
+        .action-button.danger {
+            background: var(--error-100);
+            color: var(--error-700);
+        }
+        
+        /* Control Panel */
+        .control-section {
+            padding: var(--spacing-md);
+        }
+        
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+        }
+        
+        .control-button {
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .control-button:active {
+            background: var(--gray-50);
+        }
+        
+        .control-button.active {
+            background: var(--primary-50);
+            border-color: var(--primary-500);
+            color: var(--primary-700);
+        }
+        
+        .control-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gray-100);
+            border-radius: 8px;
+        }
+        
+        .control-button.active .control-icon {
+            background: var(--primary-100);
+        }
+        
+        .control-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .control-value {
+            font-size: 11px;
+            color: var(--gray-600);
+        }
+        
+        /* Bottom Bar */
+        .bottom-bar {
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            padding: var(--spacing-md);
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .button {
+            flex: 1;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .button-primary:active {
+            background: var(--primary-600);
+        }
+        
+        .button-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .button-secondary:active {
+            background: var(--gray-50);
+        }
+        
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="session-info">
+                <h1 class="session-title">Q4 Team Retrospective</h1>
+                <div class="session-code">Code: 425-789</div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-button">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M10.5 1.5H8.5A2.5 2.5 0 006 4v12a2.5 2.5 0 002.5 2.5h8a2.5 2.5 0 002.5-2.5V4a2.5 2.5 0 00-2.5-2.5H14.5m-4 0v3m0-3v-1m0 4h3m-3 0H7.5" stroke-width="1.5"/>
+                    </svg>
+                </button>
+                <button class="icon-button">
+                    <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                        <circle cx="10" cy="10" r="8" stroke-width="1.5"/>
+                        <circle cx="10" cy="10" r="3" stroke-width="1.5"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+        <div class="tab active" onclick="switchTab('live')">Live</div>
+        <div class="tab" onclick="switchTab('messages')">Messages</div>
+        <div class="tab" onclick="switchTab('control')">Control</div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="content">
+        <!-- Live Tab -->
+        <div id="live-tab" class="tab-content active">
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Active Participants</div>
+                        <div class="stat-trend trend-up">
+                            <svg class="icon-sm" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 4l4 4H4l4-4z"/>
+                            </svg>
+                            <span>+3 joined</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Total Messages</div>
+                        <div class="stat-trend trend-up">
+                            <svg class="icon-sm" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 4l4 4H4l4-4z"/>
+                            </svg>
+                            <span>3.7/min</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">0.82</div>
+                        <div class="stat-label">Avg Agreement</div>
+                        <div class="stat-trend">
+                            <span style="color: var(--gray-500);">Healthy debate</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">In Queue</div>
+                        <div class="stat-trend">
+                            <span style="color: var(--warning-500);">High volume</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Real-time Chart -->
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h3 class="chart-title">Engagement Timeline</h3>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: var(--primary-500);"></div>
+                            <span>Messages</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: var(--success-500);"></div>
+                            <span>Votes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-line"></div>
+                </div>
+            </div>
+            
+            <!-- AI Insights -->
+            <div class="messages-section">
+                <div class="section-header">
+                    <h2 class="section-title">Live AI Insights</h2>
+                </div>
+                <div class="message-card" style="background: var(--warning-100); border-color: var(--warning-300);">
+                    <div class="message-content" style="color: var(--warning-800);">
+                        <strong>Emerging Theme:</strong> Remote work flexibility is being mentioned frequently (18 times). Consider addressing this topic directly.
+                    </div>
+                </div>
+                <div class="message-card" style="background: var(--primary-100); border-color: var(--primary-300);">
+                    <div class="message-content" style="color: var(--primary-800);">
+                        <strong>High Engagement:</strong> Messages about team communication are receiving 92% agreement. This appears to be a shared concern.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Messages Tab -->
+        <div id="messages-tab" class="tab-content">
+            <div class="messages-section">
+                <div class="section-header">
+                    <h2 class="section-title">Message Queue</h2>
+                    <span class="filter-badge">High votes</span>
+                </div>
+                
+                <div class="message-list">
+                    <div class="message-card">
+                        <div class="message-content">
+                            "The daily standups have been really helpful for keeping everyone aligned, but I think 30 minutes is too long. Could we try timeboxing to 15 minutes?"
+                        </div>
+                        <div class="message-footer">
+                            <div class="message-meta">
+                                <span>MSG-089</span>
+                                <div class="vote-indicator">
+                                    <div class="vote-bar">
+                                        <div class="vote-fill" style="width: 88%;"></div>
+                                    </div>
+                                    <span>0.88</span>
+                                </div>
+                                <span>32 votes</span>
+                            </div>
+                            <div class="message-actions">
+                                <button class="action-button">Pin</button>
+                                <button class="action-button danger">Hide</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-card">
+                        <div class="message-content">
+                            "We need better documentation for our internal tools. New team members struggle to get up to speed quickly."
+                        </div>
+                        <div class="message-footer">
+                            <div class="message-meta">
+                                <span>MSG-090</span>
+                                <div class="vote-indicator">
+                                    <div class="vote-bar">
+                                        <div class="vote-fill" style="width: 76%;"></div>
+                                    </div>
+                                    <span>0.76</span>
+                                </div>
+                                <span>28 votes</span>
+                            </div>
+                            <div class="message-actions">
+                                <button class="action-button">Pin</button>
+                                <button class="action-button danger">Hide</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="message-card">
+                        <div class="message-content">
+                            "The new project management tool is working great! Much easier to track progress and collaborate."
+                        </div>
+                        <div class="message-footer">
+                            <div class="message-meta">
+                                <span>MSG-091</span>
+                                <div class="vote-indicator">
+                                    <div class="vote-bar">
+                                        <div class="vote-fill" style="width: 92%;"></div>
+                                    </div>
+                                    <span>0.92</span>
+                                </div>
+                                <span>25 votes</span>
+                            </div>
+                            <div class="message-actions">
+                                <button class="action-button">Pin</button>
+                                <button class="action-button danger">Hide</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Tab -->
+        <div id="control-tab" class="tab-content">
+            <div class="control-section">
+                <h2 class="section-title" style="margin-bottom: var(--spacing-md);">Session Controls</h2>
+                
+                <div class="control-grid">
+                    <button class="control-button active">
+                        <div class="control-icon">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                <path d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <span class="control-label">Auto-Release</span>
+                        <span class="control-value">Every 30s</span>
+                    </button>
+                    
+                    <button class="control-button">
+                        <div class="control-icon">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 2a5 5 0 00-5 5v2a2 2 0 00-2 2v5a2 2 0 002 2h10a2 2 0 002-2v-5a2 2 0 00-2-2H7V7a3 3 0 016 0v2h2V7a5 5 0 00-5-5z"/>
+                            </svg>
+                        </div>
+                        <span class="control-label">New Messages</span>
+                        <span class="control-value">Paused</span>
+                    </button>
+                    
+                    <button class="control-button active">
+                        <div class="control-icon">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13 7H7v6h6V7z"/>
+                                <path d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7z"/>
+                            </svg>
+                        </div>
+                        <span class="control-label">AI Analysis</span>
+                        <span class="control-value">Real-time</span>
+                    </button>
+                    
+                    <button class="control-button">
+                        <div class="control-icon">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+                            </svg>
+                        </div>
+                        <span class="control-label">Show Votes</span>
+                        <span class="control-value">Hidden</span>
+                    </button>
+                </div>
+                
+                <div style="margin-top: var(--spacing-xl);">
+                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: var(--spacing-md);">Quick Actions</h3>
+                    <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                        <button class="button button-secondary">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            Extend Session (15 min)
+                        </button>
+                        <button class="button button-secondary">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+                            </svg>
+                            Download Messages
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+        <button class="button button-secondary">
+            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                <path d="M10 4a6 6 0 00-6 6v3h2v-3a4 4 0 018 0v3h2v-3a6 6 0 00-6-6z"/>
+            </svg>
+            Broadcast
+        </button>
+        <button class="button button-primary">
+            End Session
+        </button>
+    </div>
+    
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Update tab navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        // Control buttons
+        document.querySelectorAll('.control-button').forEach(button => {
+            button.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update participant count
+            const participantCount = document.querySelector('.stat-value');
+            const currentCount = parseInt(participantCount.textContent);
+            const change = Math.random() > 0.7 ? 1 : 0;
+            if (change && currentCount < 50) {
+                participantCount.textContent = currentCount + change;
+            }
+            
+            // Update message count
+            const messageCount = document.querySelectorAll('.stat-value')[1];
+            const currentMessages = parseInt(messageCount.textContent);
+            messageCount.textContent = currentMessages + Math.floor(Math.random() * 3);
+        }, 5000);
+    </script>
+</body>
+</html>

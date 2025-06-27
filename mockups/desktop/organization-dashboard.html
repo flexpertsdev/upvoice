@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>upVoice - Organization Dashboard</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --primary-50: #F0F9FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-600: #475467;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --success-100: #D1FADF;
+            --error-500: #F04438;
+            --warning-500: #F79009;
+            --purple-500: #7C3AED;
+            --purple-100: #EDE9FE;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-xl) var(--spacing-lg);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .org-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .org-logo {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-100);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .org-details h1 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .org-plan {
+            font-size: 12px;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+        
+        .plan-badge {
+            background: var(--purple-100);
+            color: var(--purple-700);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        /* Navigation */
+        .nav {
+            flex: 1;
+            padding: var(--spacing-lg) var(--spacing-md);
+        }
+        
+        .nav-section {
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .nav-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-500);
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-sm);
+            padding: 0 var(--spacing-sm);
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-sm);
+            color: var(--gray-700);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-bottom: 2px;
+        }
+        
+        .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--gray-900);
+        }
+        
+        .nav-item.active {
+            background: var(--primary-50);
+            color: var(--primary-700);
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--spacing-lg) var(--spacing-xl);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background: var(--primary-600);
+        }
+        
+        .button-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .button-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            flex: 1;
+            padding: var(--spacing-xl);
+            overflow-y: auto;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 14px;
+        }
+        
+        .trend-up {
+            color: var(--success-500);
+        }
+        
+        .trend-down {
+            color: var(--error-500);
+        }
+        
+        /* Recent Activity */
+        .section {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            color: var(--primary-600);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .view-all:hover {
+            color: var(--primary-700);
+        }
+        
+        /* Activity List */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .activity-item:hover {
+            background: var(--gray-100);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.session {
+            background: var(--primary-100);
+            color: var(--primary-600);
+        }
+        
+        .activity-icon.team {
+            background: var(--purple-100);
+            color: var(--purple-600);
+        }
+        
+        .activity-icon.insight {
+            background: var(--warning-100);
+            color: var(--warning-600);
+        }
+        
+        .activity-details {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .activity-meta {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+        
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+        
+        .team-card {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .team-card:hover {
+            background: var(--gray-100);
+            transform: translateY(-1px);
+        }
+        
+        .team-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-500);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .team-info {
+            flex: 1;
+        }
+        
+        .team-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        
+        .team-role {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        .team-sessions {
+            text-align: right;
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+        
+        /* Charts */
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+        }
+        
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .icon-lg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="org-info">
+                <div class="org-logo">TC</div>
+                <div class="org-details">
+                    <h1>TechCorp Inc</h1>
+                    <div class="org-plan">
+                        <span class="plan-badge">Enterprise</span>
+                        <span>248 members</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="nav">
+            <div class="nav-section">
+                <div class="nav-label">Overview</div>
+                <a href="#" class="nav-item active">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 00-2 2v6a2 2 0 002 2h2a1 1 0 100 2H6a2 2 0 01-2-2V5z"/>
+                    </svg>
+                    Analytics
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    </svg>
+                    Reports
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-label">Sessions</div>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 7H7v6h6V7z"/>
+                    </svg>
+                    Active Sessions
+                    <span class="nav-badge">3</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8z"/>
+                    </svg>
+                    Scheduled
+                    <span class="nav-badge">12</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/>
+                    </svg>
+                    History
+                </a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-label">Organization</div>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                    </svg>
+                    Teams
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    Members
+                </a>
+                <a href="#" class="nav-item">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762z"/>
+                    </svg>
+                    Settings
+                </a>
+            </div>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="page-title">Organization Dashboard</h1>
+                <div class="header-actions">
+                    <button class="button button-secondary">
+                        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                            <path d="M7 10l5 5 5-5M7 5l5 5 5-5" stroke-width="1.5"/>
+                        </svg>
+                        Export Report
+                    </button>
+                    <button class="button button-primary">
+                        <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                        </svg>
+                        New Session
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Total Sessions</span>
+                        <div class="stat-icon">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">142</div>
+                    <div class="stat-trend trend-up">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5l5 5H5l5-5z"/>
+                        </svg>
+                        +12% from last month
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Active Members</span>
+                        <div class="stat-icon">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">89%</div>
+                    <div class="stat-trend trend-up">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5l5 5H5l5-5z"/>
+                        </svg>
+                        221 of 248 members
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">Avg Engagement</span>
+                        <div class="stat-icon">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm0 4c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1.4c0-2 4-3.1 6-3.1s6 1.1 6 3.1V19z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">4.6</div>
+                    <div class="stat-trend">
+                        <span style="color: var(--gray-500);">messages per person</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-label">AI Insights</span>
+                        <div class="stat-icon">
+                            <svg class="icon-lg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-value">384</div>
+                    <div class="stat-trend trend-up">
+                        <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 5l5 5H5l5-5z"/>
+                        </svg>
+                        +28 this week
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Recent Activity</h2>
+                    <a href="#" class="view-all">View all activity →</a>
+                </div>
+                
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon session">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2z"/>
+                            </svg>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Engineering Team Retrospective completed</div>
+                            <div class="activity-meta">48 participants • 234 messages • 92% engagement</div>
+                        </div>
+                        <div class="activity-time">2 hours ago</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon team">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Marketing Team joined the organization</div>
+                            <div class="activity-meta">12 new members added</div>
+                        </div>
+                        <div class="activity-time">5 hours ago</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon insight">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707z"/>
+                            </svg>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">New AI insight available</div>
+                            <div class="activity-meta">Remote work flexibility is a top concern across 3 teams</div>
+                        </div>
+                        <div class="activity-time">Yesterday</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon session">
+                            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2z"/>
+                            </svg>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Product Planning Session scheduled</div>
+                            <div class="activity-meta">Nov 1, 2024 at 2:00 PM • Expected: 35 participants</div>
+                        </div>
+                        <div class="activity-time">Yesterday</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Team Performance -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Team Performance</h2>
+                    <a href="#" class="view-all">Manage teams →</a>
+                </div>
+                
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-avatar">EN</div>
+                        <div class="team-info">
+                            <div class="team-name">Engineering</div>
+                            <div class="team-role">42 members</div>
+                        </div>
+                        <div class="team-sessions">
+                            <div style="font-weight: 600;">28</div>
+                            <div>sessions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: var(--purple-500);">PR</div>
+                        <div class="team-info">
+                            <div class="team-name">Product</div>
+                            <div class="team-role">18 members</div>
+                        </div>
+                        <div class="team-sessions">
+                            <div style="font-weight: 600;">22</div>
+                            <div>sessions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: var(--success-500);">MK</div>
+                        <div class="team-info">
+                            <div class="team-name">Marketing</div>
+                            <div class="team-role">24 members</div>
+                        </div>
+                        <div class="team-sessions">
+                            <div style="font-weight: 600;">19</div>
+                            <div>sessions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: var(--warning-500);">CS</div>
+                        <div class="team-info">
+                            <div class="team-name">Customer Success</div>
+                            <div class="team-role">31 members</div>
+                        </div>
+                        <div class="team-sessions">
+                            <div style="font-weight: 600;">34</div>
+                            <div>sessions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: var(--error-500);">HR</div>
+                        <div class="team-info">
+                            <div class="team-name">Human Resources</div>
+                            <div class="team-role">12 members</div>
+                        </div>
+                        <div class="team-sessions">
+                            <div style="font-weight: 600;">15</div>
+                            <div>sessions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: var(--gray-700);">OP</div>
+                        <div class="team-info">
+                            <div class="team-name">Operations</div>
+                            <div class="team-role">28 members</div>
+                        </div>
+                        <div class="team-sessions">
+                            <div style="font-weight: 600;">24</div>
+                            <div>sessions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Engagement Trends -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Engagement Trends</h2>
+                    <select style="padding: 6px 12px; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 14px;">
+                        <option>Last 30 days</option>
+                        <option>Last 90 days</option>
+                        <option>Last year</option>
+                    </select>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-placeholder">
+                        <span>Engagement Chart Visualization</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Add interactivity
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // Animate stats on load
+        window.addEventListener('load', function() {
+            document.querySelectorAll('.stat-value').forEach(stat => {
+                const value = stat.textContent;
+                stat.style.opacity = '0';
+                stat.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    stat.style.transition = 'all 0.5s ease-out';
+                    stat.style.opacity = '1';
+                    stat.style.transform = 'translateY(0)';
+                }, 200);
+            });
+        });
+    </script>
+</body>
+</html>

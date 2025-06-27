@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>upVoice - Create New Session</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-600: #475467;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --error-500: #F04438;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary-600);
+        }
+        
+        .header-nav {
+            display: flex;
+            gap: var(--spacing-xl);
+        }
+        
+        .nav-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover {
+            color: var(--gray-900);
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg);
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .section-number {
+            width: 28px;
+            height: 28px;
+            background: var(--primary-100);
+            color: var(--primary-700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(46, 144, 250, 0.1);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: var(--font-family);
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.2s;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(46, 144, 250, 0.1);
+        }
+        
+        /* Radio/Checkbox Groups */
+        .option-group {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+        
+        .option-card {
+            flex: 1;
+            min-width: 200px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .option-card:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+        
+        .option-card.selected {
+            background: var(--primary-50);
+            border-color: var(--primary-500);
+        }
+        
+        .option-card input {
+            display: none;
+        }
+        
+        .option-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .option-description {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        /* Toggle Switch */
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--gray-300);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .toggle-switch.active {
+            background: var(--primary-500);
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+        
+        .toggle-label {
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+        
+        /* Access Control */
+        .access-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .access-method {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            position: relative;
+        }
+        
+        .access-method.active {
+            background: var(--primary-50);
+            border-color: var(--primary-500);
+        }
+        
+        .access-checkbox {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+        }
+        
+        .access-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            padding-right: var(--spacing-xl);
+        }
+        
+        .access-input {
+            margin-top: var(--spacing-sm);
+        }
+        
+        /* Session Preview */
+        .preview-section {
+            background: var(--primary-50);
+            border: 1px solid var(--primary-200);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .preview-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .session-code {
+            background: white;
+            border: 2px dashed var(--primary-500);
+            border-radius: 8px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--primary-700);
+        }
+        
+        .preview-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .preview-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+        
+        /* QR Code */
+        .qr-container {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: white;
+            border-radius: 8px;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            margin: 0 auto var(--spacing-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+        }
+        
+        /* Action Buttons */
+        .actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+        }
+        
+        .button {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background: var(--primary-600);
+        }
+        
+        .button-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .button-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        /* Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .icon-sm {
+            width: 14px;
+            height: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">upVoice</div>
+            <nav class="header-nav">
+                <a href="#" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link">Sessions</a>
+                <a href="#" class="nav-link">Analytics</a>
+                <a href="#" class="nav-link">Settings</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <h1 class="page-title">Create New Session</h1>
+        <p class="page-subtitle">Set up a discussion session in minutes. Participants can join anonymously with the session code.</p>
+        
+        <!-- Basic Information -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <span class="section-number">1</span>
+                Basic Information
+            </h2>
+            
+            <div class="form-group">
+                <label class="form-label">Session Title</label>
+                <input type="text" class="form-input" placeholder="e.g., Q4 Team Retrospective" value="Q4 Team Retrospective">
+                <p class="form-help">This title is visible to moderators only</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Welcome Message</label>
+                <textarea class="form-textarea" placeholder="Welcome participants and explain the session purpose...">Welcome to our Q4 retrospective! Share your honest thoughts about what's working well and what we can improve. All responses are anonymous.</textarea>
+                <p class="form-help">Participants see this when they join</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Session Type</label>
+                <div class="option-group">
+                    <label class="option-card selected">
+                        <input type="radio" name="type" checked>
+                        <div class="option-title">Open Discussion</div>
+                        <div class="option-description">Free-form sharing and voting</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="type">
+                        <div class="option-title">Guided Topics</div>
+                        <div class="option-description">Structured with prompts</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="type">
+                        <div class="option-title">Q&A Session</div>
+                        <div class="option-description">Question and answer format</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Access Control -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <span class="section-number">2</span>
+                Access Control
+            </h2>
+            
+            <div class="form-group">
+                <label class="form-label">Who can join this session?</label>
+                <div class="access-methods">
+                    <div class="access-method active">
+                        <input type="checkbox" class="access-checkbox" checked>
+                        <div class="access-title">Session Code</div>
+                        <div class="option-description">Anyone with the 6-digit code</div>
+                    </div>
+                    
+                    <div class="access-method">
+                        <input type="checkbox" class="access-checkbox">
+                        <div class="access-title">Email Domain</div>
+                        <div class="option-description">Restrict to company emails</div>
+                        <input type="text" class="form-input access-input" placeholder="@company.com" style="display: none;">
+                    </div>
+                    
+                    <div class="access-method">
+                        <input type="checkbox" class="access-checkbox">
+                        <div class="access-title">Allowlist</div>
+                        <div class="option-description">Pre-approved email list</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Additional Security</label>
+                <div class="toggle-group">
+                    <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                    <span class="toggle-label">Require email verification before joining</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Session Settings -->
+        <div class="form-section">
+            <h2 class="section-title">
+                <span class="section-number">3</span>
+                Session Settings
+            </h2>
+            
+            <div class="form-group">
+                <label class="form-label">Duration</label>
+                <div class="option-group">
+                    <label class="option-card">
+                        <input type="radio" name="duration">
+                        <div class="option-title">30 minutes</div>
+                    </label>
+                    <label class="option-card selected">
+                        <input type="radio" name="duration" checked>
+                        <div class="option-title">1 hour</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="duration">
+                        <div class="option-title">2 hours</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="duration">
+                        <div class="option-title">No limit</div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Message Flow</label>
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-md);">
+                    <div class="toggle-group">
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        <span class="toggle-label">Auto-release messages (every 30 seconds)</span>
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                        <span class="toggle-label">Allow participants to see vote counts</span>
+                    </div>
+                    <div class="toggle-group">
+                        <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                        <span class="toggle-label">Enable viral propagation algorithm</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">AI Analysis</label>
+                <div class="option-group">
+                    <label class="option-card selected">
+                        <input type="radio" name="ai" checked>
+                        <div class="option-title">Real-time</div>
+                        <div class="option-description">Live insights during session</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="ai">
+                        <div class="option-title">Post-session</div>
+                        <div class="option-description">Analysis after completion</div>
+                    </label>
+                    <label class="option-card">
+                        <input type="radio" name="ai">
+                        <div class="option-title">Disabled</div>
+                        <div class="option-description">No AI analysis</div>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview -->
+        <div class="preview-section">
+            <div class="preview-header">
+                <div>
+                    <h3 class="preview-title">Session Ready!</h3>
+                    <p style="font-size: 14px; color: var(--gray-600); margin-top: 4px;">Share this code with participants</p>
+                </div>
+                <div class="session-code">425-789</div>
+            </div>
+            
+            <div class="preview-details">
+                <div class="preview-item">
+                    <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                    </svg>
+                    <span>Open to anyone with code</span>
+                </div>
+                <div class="preview-item">
+                    <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 7a1 1 0 012 0v4a1 1 0 01-2 0V7zm3 0a1 1 0 012 0v4a1 1 0 01-2 0V7z"/>
+                    </svg>
+                    <span>1 hour duration</span>
+                </div>
+                <div class="preview-item">
+                    <svg class="icon-sm" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13 7h-2v2h2V7zm0 4h-2v6h2v-6zm4-9H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H7V4h10v14z"/>
+                    </svg>
+                    <span>Real-time AI analysis</span>
+                </div>
+            </div>
+            
+            <div class="qr-container">
+                <div class="qr-placeholder">
+                    <span>QR Code</span>
+                </div>
+                <p style="font-size: 14px; color: var(--gray-600);">Participants can scan to join instantly</p>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="actions">
+            <button class="button button-secondary">
+                Save as Template
+            </button>
+            <button class="button button-primary">
+                <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M5 3v14l5-3 5 3V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Start Session
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Option card selection
+        document.querySelectorAll('.option-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const name = this.querySelector('input').name;
+                if (name) {
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                        input.closest('.option-card').classList.remove('selected');
+                    });
+                }
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+        
+        // Access method toggles
+        document.querySelectorAll('.access-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const method = this.closest('.access-method');
+                if (this.checked) {
+                    method.classList.add('active');
+                    const input = method.querySelector('.access-input');
+                    if (input) input.style.display = 'block';
+                } else {
+                    method.classList.remove('active');
+                    const input = method.querySelector('.access-input');
+                    if (input) input.style.display = 'none';
+                }
+            });
+        });
+        
+        // Generate random session code
+        function generateCode() {
+            const code1 = Math.floor(100 + Math.random() * 900);
+            const code2 = Math.floor(100 + Math.random() * 900);
+            return `${code1}-${code2}`;
+        }
+        
+        // Update session code on load
+        document.querySelector('.session-code').textContent = generateCode();
+    </script>
+</body>
+</html>

@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>upVoice - Moderator Command Center</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-600: #475467;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --success-100: #D1FADF;
+            --error-500: #F04438;
+            --error-100: #FEE4E2;
+            --warning-500: #F79009;
+            --warning-100: #FEF0C7;
+            --purple-500: #7C3AED;
+            --purple-100: #EDE9FE;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: var(--spacing-md);
+            flex-shrink: 0;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .session-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .icon-button {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Health Metrics Strip */
+        .health-metrics {
+            display: flex;
+            gap: var(--spacing-sm);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: var(--spacing-xs) 0;
+        }
+        
+        .metric-pill {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--gray-100);
+            border-radius: 16px;
+            font-size: 12px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .metric-pill.good {
+            background: var(--success-100);
+            color: var(--success-700);
+        }
+        
+        .metric-pill.warning {
+            background: var(--warning-100);
+            color: var(--warning-700);
+        }
+        
+        .metric-pill.alert {
+            background: var(--error-100);
+            color: var(--error-700);
+        }
+        
+        .metric-dot {
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Tab Navigation */
+        .tab-nav {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            padding: 0 var(--spacing-md);
+            flex-shrink: 0;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: var(--spacing-md) var(--spacing-sm);
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            color: var(--primary-600);
+            border-bottom-color: var(--primary-600);
+        }
+        
+        /* Content Container */
+        .content {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .tab-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Control Tab */
+        .control-content {
+            padding: var(--spacing-md);
+        }
+        
+        .topic-control {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .current-topic {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .topic-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .topic-timer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .timer-display {
+            font-size: 24px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        
+        .timer-button {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .topic-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+        }
+        
+        .action-button {
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+        }
+        
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .button-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+        
+        .button-danger {
+            background: var(--error-500);
+            color: white;
+        }
+        
+        /* Quick Settings */
+        .quick-settings {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .settings-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) 0;
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gray-300);
+            border-radius: 24px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        
+        .toggle-slider::before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        
+        .toggle-input:checked + .toggle-slider {
+            background: var(--primary-500);
+        }
+        
+        .toggle-input:checked + .toggle-slider::before {
+            transform: translateX(20px);
+        }
+        
+        /* Stats Tab */
+        .stats-content {
+            padding: var(--spacing-md);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+        
+        .stat-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-sm);
+            font-size: 16px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        /* Engagement Chart */
+        .chart-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .chart-period {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        .mini-chart {
+            height: 120px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-line {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(46, 144, 250, 0.1), transparent);
+            border-top: 2px solid var(--primary-500);
+        }
+        
+        /* Ghosts Tab */
+        .ghosts-content {
+            padding: var(--spacing-md);
+        }
+        
+        .ghost-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .ghost-preview {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: var(--spacing-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .ghost-preview:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ghost-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+            font-size: 11px;
+            color: var(--gray-600);
+        }
+        
+        .ghost-screen {
+            background: var(--gray-50);
+            border-radius: 6px;
+            padding: var(--spacing-sm);
+            height: 100px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .ghost-message {
+            font-size: 10px;
+            line-height: 1.4;
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .ghost-vote-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--gray-200);
+            border-radius: 10px;
+            position: absolute;
+            bottom: var(--spacing-sm);
+            left: 0;
+            right: 0;
+        }
+        
+        /* Synthetron Stream */
+        .stream-section {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            padding: var(--spacing-lg);
+        }
+        
+        .stream-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .stream-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .stream-badge {
+            background: var(--success-100);
+            color: var(--success-700);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .synthetron-item {
+            padding: var(--spacing-md);
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .synthetron-content {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .synthetron-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--gray-600);
+        }
+        
+        .synthetron-stats {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+        
+        /* Bottom Actions */
+        .bottom-actions {
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            padding: var(--spacing-md);
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-shrink: 0;
+        }
+        
+        .bottom-button {
+            flex: 1;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .icon-sm {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Alert Badge */
+        .alert-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 8px;
+            height: 8px;
+            background: var(--error-500);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <h1 class="session-title">Q4 Team Retrospective</h1>
+            <div class="header-actions">
+                <button class="icon-button">
+                    <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Health Metrics -->
+        <div class="health-metrics">
+            <div class="metric-pill good">
+                <span class="metric-dot"></span>
+                <span>42 active</span>
+            </div>
+            <div class="metric-pill good">
+                <span>💗 3.2 msg/min</span>
+            </div>
+            <div class="metric-pill warning">
+                <span>⚠️ 12 unvoted</span>
+            </div>
+            <div class="metric-pill">
+                <span>💬 8 threads</span>
+            </div>
+            <div class="metric-pill alert">
+                <span>🔥 Hot topic</span>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+        <div class="tab active" onclick="switchTab('control')">Control</div>
+        <div class="tab" onclick="switchTab('stats')">Stats</div>
+        <div class="tab" onclick="switchTab('ghosts')">
+            Ghosts
+            <span class="alert-badge"></span>
+        </div>
+    </nav>
+    
+    <!-- Content -->
+    <div class="content">
+        <!-- Control Tab -->
+        <div id="control-tab" class="tab-content active">
+            <div class="control-content">
+                <!-- Topic Control -->
+                <div class="topic-control">
+                    <div class="current-topic">Topic 3 of 5</div>
+                    <div class="topic-name">Team Communication & Meetings</div>
+                    
+                    <div class="topic-timer">
+                        <div class="timer-display">08:45</div>
+                        <div class="timer-actions">
+                            <button class="timer-button">+5 min</button>
+                            <button class="timer-button">Pause</button>
+                        </div>
+                    </div>
+                    
+                    <div class="topic-actions">
+                        <button class="action-button button-secondary">
+                            <svg class="icon-sm" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M11 1L6 6l5 5V1z"/>
+                            </svg>
+                            Previous
+                        </button>
+                        <button class="action-button button-primary">
+                            Next Topic
+                            <svg class="icon-sm" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M5 1l5 5-5 5V1z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Settings -->
+                <div class="quick-settings">
+                    <h3 class="settings-title">Session Settings</h3>
+                    
+                    <div class="setting-row">
+                        <span class="setting-label">Auto-release messages</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-row">
+                        <span class="setting-label">Allow new messages</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-row">
+                        <span class="setting-label">AI insights</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-row">
+                        <span class="setting-label">Show vote results</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Tab -->
+        <div id="stats-tab" class="tab-content">
+            <div class="stats-content">
+                <!-- Key Metrics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-value">89%</div>
+                        <div class="stat-label">Participation</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💬</div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">Messages</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-value">24%</div>
+                        <div class="stat-label">Synthetronized</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-value">38%</div>
+                        <div class="stat-label">Dissent Level</div>
+                    </div>
+                </div>
+                
+                <!-- Engagement Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Engagement Timeline</h3>
+                        <span class="chart-period">Last 15 min</span>
+                    </div>
+                    <div class="mini-chart">
+                        <div class="chart-line"></div>
+                    </div>
+                </div>
+                
+                <!-- AI Insights -->
+                <div class="chart-card" style="background: var(--warning-100); border-color: var(--warning-300);">
+                    <h3 class="chart-title" style="color: var(--warning-800); margin-bottom: 8px;">
+                        🤖 AI Insight
+                    </h3>
+                    <p style="font-size: 13px; line-height: 1.5; color: var(--warning-800);">
+                        <strong>Emerging theme:</strong> Remote work flexibility mentioned 18 times. Consider asking a direct question about this topic.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ghosts Tab -->
+        <div id="ghosts-tab" class="tab-content">
+            <div class="ghosts-content">
+                <!-- Ghost Previews -->
+                <div class="ghost-grid">
+                    <div class="ghost-preview">
+                        <div class="ghost-header">
+                            <span>P-023</span>
+                            <span style="color: var(--success-500);">Active</span>
+                        </div>
+                        <div class="ghost-screen">
+                            <div class="ghost-message">
+                                "The daily standups have been really helpful..."
+                            </div>
+                            <div class="ghost-vote-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="ghost-preview">
+                        <div class="ghost-header">
+                            <span>P-017</span>
+                            <span style="color: var(--warning-500);">Slow</span>
+                        </div>
+                        <div class="ghost-screen">
+                            <div class="ghost-message">
+                                "We need better documentation for..."
+                            </div>
+                            <div class="ghost-vote-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="ghost-preview">
+                        <div class="ghost-header">
+                            <span>P-041</span>
+                            <span style="color: var(--success-500);">Active</span>
+                        </div>
+                        <div class="ghost-screen">
+                            <div class="ghost-message">
+                                "Can we establish clearer ownership..."
+                            </div>
+                            <div class="ghost-vote-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="ghost-preview">
+                        <div class="ghost-header">
+                            <span>P-008</span>
+                            <span style="color: var(--error-500);">Stuck</span>
+                        </div>
+                        <div class="ghost-screen" style="background: var(--error-50);">
+                            <div style="text-align: center; padding-top: 30px; color: var(--error-600); font-size: 12px;">
+                                15 messages queued
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Synthetron Stream -->
+                <div class="stream-section">
+                    <div class="stream-header">
+                        <h3 class="stream-title">Live Synthetrons</h3>
+                        <span class="stream-badge">3 new</span>
+                    </div>
+                    
+                    <div class="synthetron-item">
+                        <div class="synthetron-content">
+                            "The daily standups have been really helpful for keeping everyone aligned, but I think 30 minutes is too long."
+                        </div>
+                        <div class="synthetron-meta">
+                            <span>MSG-156</span>
+                            <div class="synthetron-stats">
+                                <span>👁 28 views</span>
+                                <span>📊 0.82 avg</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="synthetron-item">
+                        <div class="synthetron-content">
+                            "Remote work flexibility is essential for work-life balance."
+                        </div>
+                        <div class="synthetron-meta">
+                            <span>MSG-148</span>
+                            <div class="synthetron-stats">
+                                <span>👁 35 views</span>
+                                <span>📊 0.91 avg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Actions -->
+    <div class="bottom-actions">
+        <button class="bottom-button button-secondary">
+            <svg class="icon" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/>
+            </svg>
+            Broadcast
+        </button>
+        <button class="bottom-button button-danger">
+            End Session
+        </button>
+    </div>
+    
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Update navigation
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+        
+        // Toggle switches
+        document.querySelectorAll('.toggle-input').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                console.log('Setting changed:', this.checked);
+            });
+        });
+        
+        // Timer countdown
+        let timerSeconds = 525; // 8:45
+        const timerDisplay = document.querySelector('.timer-display');
+        
+        setInterval(() => {
+            timerSeconds--;
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Alert when low
+            if (timerSeconds <= 30) {
+                timerDisplay.style.color = 'var(--error-500)';
+            }
+        }, 1000);
+        
+        // Ghost preview clicks
+        document.querySelectorAll('.ghost-preview').forEach(ghost => {
+            ghost.addEventListener('click', function() {
+                // In real app, would expand to full view
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+            });
+        });
+        
+        // Simulate live updates
+        setInterval(() => {
+            // Update metrics
+            const msgPerMin = document.querySelector('.metric-pill:nth-child(2) span');
+            const currentRate = parseFloat(msgPerMin.textContent.match(/[\d.]+/)[0]);
+            const newRate = (currentRate + (Math.random() - 0.5) * 0.2).toFixed(1);
+            msgPerMin.textContent = `💗 ${newRate} msg/min`;
+            
+            // Update participant count occasionally
+            if (Math.random() > 0.8) {
+                const participantCount = document.querySelector('.metric-pill:first-child span:last-child');
+                const current = parseInt(participantCount.textContent);
+                const change = Math.random() > 0.5 ? 1 : -1;
+                const newCount = Math.max(35, Math.min(45, current + change));
+                participantCount.textContent = `${newCount} active`;
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

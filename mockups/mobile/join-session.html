@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>upVoice - Join Session</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --primary-100: #EFF8FF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --error-500: #F04438;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            padding: var(--spacing-md);
+            text-align: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-600);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-xl) var(--spacing-lg);
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+        
+        .welcome-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-100);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-lg);
+            color: var(--primary-600);
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .welcome-subtitle {
+            font-size: 16px;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+        
+        /* Code Input Section */
+        .code-input-section {
+            background: white;
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            box-shadow: 0px 4px 8px -2px rgba(16, 24, 40, 0.1);
+            margin-bottom: var(--spacing-xl);
+        }
+        
+        .input-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .code-input-container {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .code-input {
+            width: 48px;
+            height: 56px;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gray-900);
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .code-input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            background: var(--primary-50);
+        }
+        
+        .code-input.filled {
+            border-color: var(--primary-500);
+        }
+        
+        .button {
+            width: 100%;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .button-primary {
+            background: var(--primary-500);
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background: var(--primary-600);
+        }
+        
+        .button-primary:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+        }
+        
+        /* Alternative Options */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+        }
+        
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--gray-200);
+        }
+        
+        .divider-text {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+        
+        .button-secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .button-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        /* QR Scanner Overlay */
+        .qr-scanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            z-index: 1000;
+        }
+        
+        .qr-scanner.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .qr-scanner-header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .qr-scanner-title {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .close-button {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .qr-scanner-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl);
+        }
+        
+        .qr-frame {
+            width: 280px;
+            height: 280px;
+            border: 3px solid white;
+            border-radius: 20px;
+            position: relative;
+        }
+        
+        .qr-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary-500);
+        }
+        
+        .qr-corner.tl {
+            top: -3px;
+            left: -3px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 20px 0 0 0;
+        }
+        
+        .qr-corner.tr {
+            top: -3px;
+            right: -3px;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 20px 0 0;
+        }
+        
+        .qr-corner.bl {
+            bottom: -3px;
+            left: -3px;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 20px;
+        }
+        
+        .qr-corner.br {
+            bottom: -3px;
+            right: -3px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 20px 0;
+        }
+        
+        .qr-scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-500);
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: calc(100% - 3px); }
+            100% { top: 0; }
+        }
+        
+        .qr-instructions {
+            text-align: center;
+            color: white;
+            margin-top: var(--spacing-xl);
+            font-size: 14px;
+        }
+        
+        /* Recent Sessions */
+        .recent-sessions {
+            margin-top: auto;
+            padding-top: var(--spacing-xl);
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: var(--spacing-md);
+        }
+        
+        .session-item {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .session-item:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+        
+        .session-info {
+            flex: 1;
+        }
+        
+        .session-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-900);
+        }
+        
+        .session-time {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+        
+        .session-arrow {
+            color: var(--gray-400);
+        }
+        
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .icon-lg {
+            width: 48px;
+            height: 48px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">upVoice</div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-icon">
+                <svg class="icon-lg" viewBox="0 0 48 48" fill="none" stroke="currentColor">
+                    <rect x="8" y="8" width="32" height="32" rx="8" stroke-width="3"/>
+                    <path d="M16 24h16M24 16v16" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h1 class="welcome-title">Join a Session</h1>
+            <p class="welcome-subtitle">Enter the session code or scan the QR code to participate</p>
+        </div>
+        
+        <!-- Code Input Section -->
+        <div class="code-input-section">
+            <label class="input-label">Enter 6-digit code</label>
+            <div class="code-input-container">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <span style="width: 8px;"></span>
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+                <input type="text" class="code-input" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            </div>
+            <button class="button button-primary" id="joinButton" disabled>
+                Join Session
+                <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M5 10h10m0 0l-3-3m3 3l-3 3" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Alternative Options -->
+        <div class="divider">
+            <div class="divider-line"></div>
+            <span class="divider-text">or</span>
+            <div class="divider-line"></div>
+        </div>
+        
+        <button class="button button-secondary" onclick="openQRScanner()">
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                <path d="M3 7V5a2 2 0 012-2h2M13 3h2a2 2 0 012 2v2M17 13v2a2 2 0 01-2 2h-2M7 17H5a2 2 0 01-2-2v-2M8 12h4M10 10v4" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Scan QR Code
+        </button>
+        
+        <!-- Recent Sessions -->
+        <div class="recent-sessions">
+            <h3 class="section-title">Recent Sessions</h3>
+            <div class="session-item" onclick="rejoinSession('Team Standup')">
+                <div class="session-info">
+                    <div class="session-name">Team Standup</div>
+                    <div class="session-time">Yesterday, 10:00 AM</div>
+                </div>
+                <svg class="icon session-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M7 10l3 3 3-3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-90 10 10)"/>
+                </svg>
+            </div>
+            <div class="session-item" onclick="rejoinSession('Q4 Planning')">
+                <div class="session-info">
+                    <div class="session-name">Q4 Planning</div>
+                    <div class="session-time">Oct 15, 2:30 PM</div>
+                </div>
+                <svg class="icon session-arrow" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M7 10l3 3 3-3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" transform="rotate(-90 10 10)"/>
+                </svg>
+            </div>
+        </div>
+    </main>
+    
+    <!-- QR Scanner Overlay -->
+    <div class="qr-scanner" id="qrScanner">
+        <div class="qr-scanner-header">
+            <h2 class="qr-scanner-title">Scan QR Code</h2>
+            <button class="close-button" onclick="closeQRScanner()">
+                <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                    <path d="M6 6l8 8M14 6l-8 8" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+        <div class="qr-scanner-content">
+            <div>
+                <div class="qr-frame">
+                    <div class="qr-corner tl"></div>
+                    <div class="qr-corner tr"></div>
+                    <div class="qr-corner bl"></div>
+                    <div class="qr-corner br"></div>
+                    <div class="qr-scan-line"></div>
+                </div>
+                <p class="qr-instructions">Point your camera at the QR code on the moderator's screen</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Code input handling
+        const codeInputs = document.querySelectorAll('.code-input');
+        const joinButton = document.getElementById('joinButton');
+        
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', function(e) {
+                if (this.value.length === 1) {
+                    this.classList.add('filled');
+                    if (index < codeInputs.length - 1) {
+                        codeInputs[index + 1].focus();
+                    }
+                } else {
+                    this.classList.remove('filled');
+                }
+                
+                checkCodeComplete();
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value === '' && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+            });
+            
+            // Only allow numbers
+            input.addEventListener('beforeinput', function(e) {
+                if (e.data && !/[0-9]/.test(e.data)) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        function checkCodeComplete() {
+            const allFilled = Array.from(codeInputs).every(input => input.value.length === 1);
+            joinButton.disabled = !allFilled;
+        }
+        
+        joinButton.addEventListener('click', function() {
+            const code = Array.from(codeInputs).map(input => input.value).join('');
+            alert(`Joining session with code: ${code.slice(0, 3)}-${code.slice(3)}`);
+        });
+        
+        // QR Scanner
+        function openQRScanner() {
+            document.getElementById('qrScanner').classList.add('active');
+            // Simulate QR scan after 2 seconds
+            setTimeout(() => {
+                closeQRScanner();
+                alert('Session found! Joining "Q4 Team Retrospective"...');
+            }, 2000);
+        }
+        
+        function closeQRScanner() {
+            document.getElementById('qrScanner').classList.remove('active');
+        }
+        
+        // Recent sessions
+        function rejoinSession(sessionName) {
+            alert(`Rejoining "${sessionName}"...`);
+        }
+    </script>
+</body>
+</html>

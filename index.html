@@ -1,100 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    
-    <!-- upVoice Meta Tags -->
-    <title>upVoice - Transform Discussions into Insights</title>
-    <meta name="description" content="AI-powered anonymous discussions that get to the truth. Swipe to vote, get instant insights." />
-    
-    <!-- Mobile Optimization -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="format-detection" content="telephone=no" />
-    
-    <!-- Theme Color -->
     <meta name="theme-color" content="#2E90FA" />
+    <meta name="description" content="upVoice - Anonymous real-time discussion platform for meaningful team conversations" />
     
-    <!-- Open Graph / Social Media -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="upVoice - AI Discussion Platform" />
-    <meta property="og:description" content="Transform group discussions into quantitative insights with AI analysis" />
-    <meta property="og:image" content="/og-image.png" />
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/images/icons/icon-192x192.png" />
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     
-    <!-- PWA -->
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>upVoice - Real-time Anonymous Discussions</title>
     
-    <!-- Splash Screens for iOS -->
-    <link rel="apple-touch-startup-image" href="/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" />
-    <link rel="apple-touch-startup-image" href="/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" />
-    <link rel="apple-touch-startup-image" href="/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3)" />
-    <link rel="apple-touch-startup-image" href="/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)" />
-    
-    <!-- Prevent zoom on input focus (iOS) -->
     <style>
-      /* Prevent zoom on input focus */
-      input, textarea, select {
-        font-size: 16px !important;
+      /* Initial loading styles */
+      body {
+        margin: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
       
-      /* Smooth scrolling */
-      html {
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
       
-      /* Prevent text selection on UI elements */
-      .no-select {
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        -webkit-tap-highlight-color: transparent;
+      /* Splash screen */
+      .splash-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease-out;
       }
       
-      /* Loading screen */
-      #root:empty::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
+      .splash-content {
+        text-align: center;
+      }
+      
+      .splash-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+      }
+      
+      .splash-text {
+        font-size: 24px;
+        font-weight: 600;
+        color: #101828;
+        margin-bottom: 8px;
+      }
+      
+      .splash-tagline {
+        font-size: 14px;
+        color: #667085;
+      }
+      
+      /* Loading spinner */
+      .loading-spinner {
+        margin: 24px auto 0;
         width: 40px;
         height: 40px;
-        margin: -20px 0 0 -20px;
-        border: 3px solid #f3f3f3;
-        border-top: 3px solid #2E90FA;
+        border: 3px solid #F2F4F7;
+        border-top-color: #2E90FA;
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }
       
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Hide splash screen when app loads */
+      .splash-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
       }
     </style>
   </head>
   <body>
-    <!-- App root -->
-    <div id="root"></div>
-    
-    <!-- No JavaScript fallback -->
-    <noscript>
-      <div style="padding: 20px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;">
-        <h1>JavaScript Required</h1>
-        <p>upVoice requires JavaScript to be enabled to function properly.</p>
-        <p>Please enable JavaScript in your browser settings and reload the page.</p>
+    <div id="root">
+      <!-- Splash Screen -->
+      <div class="splash-screen" id="splash">
+        <div class="splash-content">
+          <div class="splash-logo">
+            <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="80" height="80" rx="16" fill="#EFF8FF"/>
+              <path d="M40 20V60M20 40H60" stroke="#2E90FA" stroke-width="4" stroke-linecap="round"/>
+              <circle cx="40" cy="40" r="8" fill="#2E90FA"/>
+            </svg>
+          </div>
+          <h1 class="splash-text">upVoice</h1>
+          <p class="splash-tagline">Amplifying every voice</p>
+          <div class="loading-spinner"></div>
+        </div>
       </div>
-    </noscript>
-    
-    <!-- Entry point -->
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Remove splash screen when app is ready
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const splash = document.getElementById('splash');
+          if (splash) {
+            splash.classList.add('fade-out');
+            setTimeout(() => splash.remove(), 300);
+          }
+        }, 1000);
+      });
+    </script>
   </body>
 </html>
