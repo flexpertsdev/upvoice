@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>upVoice - Session View (Mobile)</title>
+    
+    <!-- Untitled UI inspired styling -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Untitled UI Colors */
+            --primary-500: #2E90FA;
+            --primary-600: #1570EF;
+            --gray-50: #F9FAFB;
+            --gray-100: #F2F4F7;
+            --gray-200: #EAECF0;
+            --gray-300: #D0D5DD;
+            --gray-500: #667085;
+            --gray-700: #344054;
+            --gray-900: #101828;
+            --success-500: #12B76A;
+            --error-500: #F04438;
+            
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            
+            /* Typography */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        body {
+            font-family: var(--font-family);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-md);
+            z-index: 100;
+        }
+        
+        .session-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .session-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .participant-count {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .active-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success-500);
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        /* Card Stack */
+        .card-container {
+            position: absolute;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+        }
+        
+        .card-stack {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            max-height: 600px;
+        }
+        
+        .message-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0px 4px 8px -2px rgba(16, 24, 40, 0.1), 0px 2px 4px -2px rgba(16, 24, 40, 0.06);
+            padding: var(--spacing-xl);
+            display: flex;
+            flex-direction: column;
+            cursor: grab;
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .message-card:nth-child(1) {
+            z-index: 3;
+        }
+        
+        .message-card:nth-child(2) {
+            z-index: 2;
+            transform: scale(0.95) translateY(10px);
+            opacity: 0.8;
+        }
+        
+        .message-card:nth-child(3) {
+            z-index: 1;
+            transform: scale(0.9) translateY(20px);
+            opacity: 0.6;
+        }
+        
+        .message-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .message-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: var(--gray-700);
+        }
+        
+        .message-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .message-time {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+        
+        .vote-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .vote-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.5;
+        }
+        
+        /* Swipe Indicators */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .swipe-left {
+            left: var(--spacing-md);
+            background: rgba(240, 68, 56, 0.1);
+            color: var(--error-500);
+        }
+        
+        .swipe-right {
+            right: var(--spacing-md);
+            background: rgba(18, 183, 106, 0.1);
+            color: var(--success-500);
+        }
+        
+        /* Message Composer */
+        .composer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            padding: var(--spacing-md);
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: flex-end;
+        }
+        
+        .message-input {
+            flex: 1;
+            min-height: 40px;
+            max-height: 120px;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .message-input:focus {
+            border-color: var(--primary-500);
+        }
+        
+        .send-button {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-500);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .send-button:hover {
+            background: var(--primary-600);
+        }
+        
+        .send-button:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+        }
+        
+        /* Voting hint */
+        .voting-hint {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(16, 24, 40, 0.8);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .swipe-animation {
+            width: 30px;
+            height: 2px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .swipe-animation::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 2px;
+            background: var(--primary-500);
+            animation: swipe 2s infinite;
+        }
+        
+        @keyframes swipe {
+            0% { left: -10px; }
+            50% { left: 30px; }
+            100% { left: -10px; }
+        }
+        
+        /* Icons */
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="session-info">
+            <div class="session-title">Team Feedback Session</div>
+            <div class="participant-count">
+                <span class="active-dot"></span>
+                <span>24 active participants</span>
+            </div>
+        </div>
+        <button style="background: none; border: none; padding: 8px;">
+            <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                <path d="M10 10h.01M10 6h.01M10 14h.01" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </header>
+    
+    <!-- Card Stack -->
+    <div class="card-container">
+        <div class="card-stack">
+            <!-- Card 3 (back) -->
+            <div class="message-card">
+                <div class="message-content">
+                    <p class="message-text">The new flexible hours are great, but communication between teams needs improvement...</p>
+                </div>
+                <div class="message-meta">
+                    <span class="message-time">2 min ago</span>
+                    <div class="vote-indicator">
+                        <svg class="vote-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/>
+                        </svg>
+                        <span>-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 2 (middle) -->
+            <div class="message-card">
+                <div class="message-content">
+                    <p class="message-text">I love the transparency in decision-making lately. It makes me feel more connected to our mission.</p>
+                </div>
+                <div class="message-meta">
+                    <span class="message-time">45 sec ago</span>
+                    <div class="vote-indicator">
+                        <svg class="vote-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/>
+                        </svg>
+                        <span>-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 1 (front - active) -->
+            <div class="message-card" id="activeCard">
+                <div class="swipe-indicator swipe-left">Disagree</div>
+                <div class="swipe-indicator swipe-right">Agree</div>
+                
+                <div class="message-content">
+                    <p class="message-text">Remote work has really improved my work-life balance. I hope we can keep this flexibility even after returning to office.</p>
+                </div>
+                <div class="message-meta">
+                    <span class="message-time">Just now</span>
+                    <div class="vote-indicator">
+                        <svg class="vote-icon" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"/>
+                        </svg>
+                        <span>Swipe to vote</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Voting Hint -->
+    <div class="voting-hint">
+        <span>Swipe to vote</span>
+        <div class="swipe-animation"></div>
+    </div>
+    
+    <!-- Message Composer -->
+    <div class="composer">
+        <textarea 
+            class="message-input" 
+            placeholder="Share your thoughts..."
+            rows="1"
+        ></textarea>
+        <button class="send-button">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M18 10L2 2L6 10L2 18L18 10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </div>
+    
+    <script>
+        // Simple swipe simulation
+        const activeCard = document.getElementById('activeCard');
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        
+        activeCard.addEventListener('mousedown', startDrag);
+        activeCard.addEventListener('touchstart', startDrag);
+        
+        function startDrag(e) {
+            isDragging = true;
+            startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            activeCard.style.cursor = 'grabbing';
+        }
+        
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('touchmove', drag);
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const deltaX = currentX - startX;
+            const rotation = deltaX * 0.1;
+            
+            activeCard.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+            
+            // Show indicators
+            const leftIndicator = activeCard.querySelector('.swipe-left');
+            const rightIndicator = activeCard.querySelector('.swipe-right');
+            
+            if (deltaX < -50) {
+                leftIndicator.style.opacity = Math.min(1, Math.abs(deltaX) / 150);
+                rightIndicator.style.opacity = 0;
+            } else if (deltaX > 50) {
+                rightIndicator.style.opacity = Math.min(1, deltaX / 150);
+                leftIndicator.style.opacity = 0;
+            } else {
+                leftIndicator.style.opacity = 0;
+                rightIndicator.style.opacity = 0;
+            }
+        }
+        
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+        
+        function endDrag() {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            const deltaX = currentX - startX;
+            
+            if (Math.abs(deltaX) > 100) {
+                // Animate card flying away
+                activeCard.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+                activeCard.style.transform = `translateX(${deltaX > 0 ? 400 : -400}px) rotate(${deltaX > 0 ? 30 : -30}deg)`;
+                activeCard.style.opacity = '0';
+                
+                // Show vote feedback
+                setTimeout(() => {
+                    alert(deltaX > 0 ? 'Voted: Agree!' : 'Voted: Disagree!');
+                    // Reset for demo
+                    activeCard.style.transition = 'none';
+                    activeCard.style.transform = 'none';
+                    activeCard.style.opacity = '1';
+                }, 300);
+            } else {
+                // Snap back
+                activeCard.style.transition = 'transform 0.2s ease-out';
+                activeCard.style.transform = 'none';
+            }
+            
+            activeCard.style.cursor = 'grab';
+            
+            // Hide indicators
+            activeCard.querySelector('.swipe-left').style.opacity = 0;
+            activeCard.querySelector('.swipe-right').style.opacity = 0;
+        }
+        
+        // Auto-resize textarea
+        const textarea = document.querySelector('.message-input');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+    </script>
+</body>
+</html>
