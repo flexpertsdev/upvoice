@@ -1,21 +1,39 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { useAuthStore } from '@stores/auth.store';
 import { Loading } from '@components/ui';
 
 // Lazy load pages for code splitting
 const LandingPage = React.lazy(() => import('./pages/LandingPage'));
-const JoinSession = React.lazy(() => import('./pages/JoinSession'));
-const ActiveSession = React.lazy(() => import('./pages/ActiveSession'));
-const CreateSession = React.lazy(() => import('./pages/CreateSession'));
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
-const Login = React.lazy(() => import('./pages/Login'));
-const Register = React.lazy(() => import('./pages/Register'));
-const Profile = React.lazy(() => import('./pages/Profile'));
-const NotFound = React.lazy(() => import('./pages/NotFound'));
+// const JoinSession = React.lazy(() => import('./pages/JoinSession'));
+// const ActiveSession = React.lazy(() => import('./pages/ActiveSession'));
+// const CreateSession = React.lazy(() => import('./pages/CreateSession'));
+// const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+// const Login = React.lazy(() => import('./pages/Login'));
+// const Register = React.lazy(() => import('./pages/Register'));
+// const Profile = React.lazy(() => import('./pages/Profile'));
+// const NotFound = React.lazy(() => import('./pages/NotFound'));
 
-// Protected Route wrapper
+// Temporary placeholder components
+const TempPage = ({ title }: { title: string }) => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <h1 className="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
+      <p className="text-gray-600">This page is under construction</p>
+    </div>
+  </div>
+);
+
+const JoinSession = () => <TempPage title="Join Session" />;
+const ActiveSession = () => <TempPage title="Active Session" />;
+const CreateSession = () => <TempPage title="Create Session" />;
+const Dashboard = () => <TempPage title="Dashboard" />;
+const Login = () => <TempPage title="Login" />;
+const Register = () => <TempPage title="Register" />;
+const Profile = () => <TempPage title="Profile" />;
+const NotFound = () => <TempPage title="404 - Page Not Found" />;
+
+// Protected Route wrapper - simplified for local storage
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAuth?: boolean;
@@ -27,11 +45,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requireAuth = true,
   redirectTo = '/login' 
 }) => {
-  const isAuthenticated = useAuthStore(state => !!state.user);
-  const isLoading = useAuthStore(state => state.isLoading);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check local storage for temp user
+    const tempUserId = localStorage.getItem('tempUserId');
+    const userEmail = localStorage.getItem('userEmail');
+    setIsAuthenticated(!!(tempUserId || userEmail));
+    setIsLoading(false);
+  }, []);
 
   if (isLoading) {
-    return <Loading fullScreen text="Checking authentication..." />;
+    return <Loading fullScreen text="Loading..." />;
   }
 
   if (requireAuth && !isAuthenticated) {
@@ -53,13 +79,6 @@ const PageLoader = () => (
 );
 
 function App() {
-  const initializeAuth = useAuthStore(state => state.initializeAuth);
-
-  useEffect(() => {
-    // Initialize auth listener
-    initializeAuth();
-  }, [initializeAuth]);
-
   return (
     <>
       <Router>

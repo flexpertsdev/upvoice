@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Container, Typography, Button, Box, TextField, Paper, Grid, Card, CardContent, IconButton, useTheme, alpha } from '@mui/material';
-import { motion } from 'framer-motion';
+import { Button, Input, Card, CardHeader, CardBody } from '@components/ui';
 import { MicIcon, PeopleIcon, AnalyticsIcon, SecurityIcon, SpeedIcon, CloudIcon, PlayIcon, ArrowForwardIcon } from '@components/icons';
-import { useAuthStore } from '@stores/auth.store';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const { anonymousUser } = useAuthStore();
   const [sessionCode, setSessionCode] = useState('');
 
   const handleJoinSession = () => {
@@ -21,11 +17,10 @@ export const LandingPage: React.FC = () => {
     navigate('/create');
   };
 
-  const handleQuickStart = async () => {
-    // For demo purposes, create anonymous session
-    if (!anonymousUser) {
-      await useAuthStore.getState().signInAnonymously();
-    }
+  const handleQuickStart = () => {
+    // Store a temporary user ID in local storage
+    const tempUserId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('tempUserId', tempUserId);
     navigate('/create');
   };
 
@@ -63,262 +58,134 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`,
-          py: { xs: 8, md: 12 },
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <Container maxWidth="lg">
-          <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-              >
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontSize: { xs: '2.5rem', sm: '3.5rem', md: '4rem' },
-                    fontWeight: 700,
-                    mb: 3,
-                    background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 py-12 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div className="animate-fadeIn">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-6">
+                Amplify Every Voice
+              </h1>
+              <p className="text-xl text-gray-600 mb-8">
+                Transform presentations into interactive conversations. Let your audience participate, vote, and engage in real-time.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={handleQuickStart}
+                  className="flex items-center gap-2"
                 >
-                  Amplify Every Voice
-                </Typography>
-                <Typography
-                  variant="h5"
-                  color="text.secondary"
-                  sx={{ mb: 4, lineHeight: 1.6 }}
+                  <PlayIcon className="w-5 h-5" />
+                  Quick Start
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => navigate('/login')}
                 >
-                  Transform presentations into interactive conversations. Let your audience participate, vote, and engage in real-time.
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<PlayIcon />}
-                    onClick={handleQuickStart}
-                    sx={{
-                      py: 1.5,
-                      px: 4,
-                      fontSize: '1.1rem',
-                    }}
-                  >
-                    Quick Start
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => navigate('/login')}
-                    sx={{
-                      py: 1.5,
-                      px: 4,
-                      fontSize: '1.1rem',
-                    }}
-                  >
-                    Sign In
-                  </Button>
-                </Box>
-              </motion.div>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-              >
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 4,
-                    borderRadius: 3,
-                    background: alpha(theme.palette.background.paper, 0.8),
-                    backdropFilter: 'blur(10px)',
-                  }}
-                >
-                  <Typography variant="h6" gutterBottom>
-                    Join a Session
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                    <TextField
-                      fullWidth
+                  Sign In
+                </Button>
+              </div>
+            </div>
+            <div className="animate-scaleIn">
+              <Card className="shadow-xl">
+                <CardHeader>
+                  <h3 className="text-lg font-semibold">Join a Session</h3>
+                </CardHeader>
+                <CardBody>
+                  <div className="flex gap-3 mb-4">
+                    <Input
                       placeholder="Enter session code"
                       value={sessionCode}
                       onChange={(e) => setSessionCode(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleJoinSession()}
-                      sx={{ flex: 1 }}
+                      className="flex-1"
                     />
                     <Button
-                      variant="contained"
+                      variant="primary"
                       onClick={handleJoinSession}
                       disabled={!sessionCode.trim()}
-                      endIcon={<ArrowForwardIcon />}
+                      className="flex items-center gap-2"
                     >
                       Join
+                      <ArrowForwardIcon className="w-4 h-4" />
                     </Button>
-                  </Box>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      OR
-                    </Typography>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-gray-500 mb-3">OR</p>
                     <Button
-                      variant="outlined"
-                      fullWidth
+                      variant="outline"
+                      className="w-full"
                       onClick={handleCreateSession}
-                      sx={{ py: 1.5 }}
                     >
                       Create New Session
                     </Button>
-                  </Box>
-                </Paper>
-              </motion.div>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+                  </div>
+                </CardBody>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Features Section */}
-      <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <Typography
-            variant="h2"
-            align="center"
-            sx={{
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-              fontWeight: 700,
-              mb: 2,
-            }}
-          >
-            Built for Modern Engagement
-          </Typography>
-          <Typography
-            variant="h6"
-            align="center"
-            color="text.secondary"
-            sx={{ mb: 8, maxWidth: 600, mx: 'auto' }}
-          >
-            Everything you need to create interactive sessions that captivate and involve your audience
-          </Typography>
-        </motion.div>
+      <div className="py-16 md:py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 animate-fadeIn">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Built for Modern Engagement
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Everything you need to create interactive sessions that captivate and involve your audience
+            </p>
+          </div>
 
-        <Grid container spacing={4}>
-          {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card
-                  sx={{
-                    height: '100%',
-                    background: alpha(theme.palette.background.paper, 0.6),
-                    backdropFilter: 'blur(10px)',
-                    border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: theme.shadows[8],
-                      borderColor: theme.palette.primary.main,
-                    },
-                  }}
-                >
-                  <CardContent sx={{ p: 4 }}>
-                    <Box
-                      sx={{
-                        width: 64,
-                        height: 64,
-                        borderRadius: 2,
-                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.1)} 0%, ${alpha(theme.palette.secondary.main, 0.1)} 100%)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        mb: 3,
-                        color: 'primary.main',
-                      }}
-                    >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <div key={index} className="animate-slideUp" style={{ animationDelay: `${index * 100}ms` }}>
+                <Card className="h-full hover:shadow-lg transition-shadow duration-300 hover:-translate-y-1">
+                  <CardBody className="p-6">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-lg flex items-center justify-center mb-4 text-blue-600">
                       {feature.icon}
-                    </Box>
-                    <Typography variant="h6" gutterBottom fontWeight={600}>
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
                       {feature.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    </h3>
+                    <p className="text-gray-600">
                       {feature.description}
-                    </Typography>
-                  </CardContent>
+                    </p>
+                  </CardBody>
                 </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* CTA Section */}
-      <Box
-        sx={{
-          background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.05)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`,
-          py: { xs: 8, md: 10 },
-        }}
-      >
-        <Container maxWidth="md">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
-                  fontWeight: 700,
-                  mb: 3,
-                }}
-              >
-                Ready to Transform Your Sessions?
-              </Typography>
-              <Typography
-                variant="h6"
-                color="text.secondary"
-                sx={{ mb: 5, maxWidth: 500, mx: 'auto' }}
-              >
-                Join thousands of presenters who are creating more engaging and interactive experiences
-              </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={handleQuickStart}
-                sx={{
-                  py: 2,
-                  px: 6,
-                  fontSize: '1.2rem',
-                  boxShadow: theme.shadows[8],
-                }}
-              >
-                Get Started Free
-              </Button>
-            </Box>
-          </motion.div>
-        </Container>
-      </Box>
-    </Box>
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 py-16 md:py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-fadeIn">
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Ready to Transform Your Sessions?
+            </h3>
+            <p className="text-xl text-gray-600 mb-8 max-w-lg mx-auto">
+              Join thousands of presenters who are creating more engaging and interactive experiences
+            </p>
+            <Button
+              variant="primary"
+              size="xl"
+              onClick={handleQuickStart}
+              className="shadow-lg"
+            >
+              Get Started Free
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -4,7 +4,7 @@ import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
 export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'color'> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg' | 'xl';
   fullWidth?: boolean;
   loading?: boolean;
@@ -46,6 +46,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         bg-white text-gray-700 border border-gray-300
         hover:bg-gray-50 focus:ring-primary-500
         active:bg-gray-100
+      `,
+      outline: `
+        bg-transparent text-primary-600 border-2 border-primary-600
+        hover:bg-primary-50 focus:ring-primary-500
+        active:bg-primary-100
       `,
       ghost: `
         bg-transparent text-gray-700
@@ -161,6 +166,17 @@ const getButtonStyles = (props: ButtonProps) => {
       },
       '&:active': {
         backgroundColor: theme.colors.gray[100],
+      },
+    },
+    outline: {
+      backgroundColor: 'transparent',
+      color: theme.colors.primary[600],
+      border: `2px solid ${theme.colors.primary[600]}`,
+      '&:hover': {
+        backgroundColor: theme.colors.primary[50],
+      },
+      '&:active': {
+        backgroundColor: theme.colors.primary[100],
       },
     },
     ghost: {
