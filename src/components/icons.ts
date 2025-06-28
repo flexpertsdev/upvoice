@@ -150,6 +150,4 @@ export {
   WifiOff as WifiOff,
   AlertCircle as AlertCircle,
   LogOut01 as ExitIcon,
-  PauseCircle as PauseIcon,
-  PlayCircle as PlayIcon,
 } from '@untitled-ui/icons-react';
