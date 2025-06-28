@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, LinearProgress, Chip, IconButton, Tooltip } from '@mui/material';
-import { ThumbsUp, ThumbsDown, Clock, CheckCircle2, XCircle, BarChart3 } from '@/components/icons';
-import { VotingSlider } from '@/components/ui/Slider';
+import { Button, Card, CardBody, Badge, Loading, Slider } from '@components/ui';
+import { 
+  ThumbsUpIcon, 
+  ThumbsDownIcon, 
+  ClockIcon, 
+  CheckCircleIcon, 
+  XIcon, 
+  BarChartIcon 
+} from '@components/icons';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export interface VotingOption {
@@ -67,201 +73,171 @@ export const VotingPanel: React.FC<VotingPanelProps> = ({
   };
 
   const renderBinaryVoting = () => (
-    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+    <div className="flex gap-4 justify-center">
       <Button
-        variant={selectedOption === 'yes' ? 'contained' : 'outlined'}
-        color="success"
-        size="large"
-        startIcon={<ThumbsUp />}
+        variant={selectedOption === 'yes' ? 'primary' : 'outline'}
+        size="lg"
         onClick={() => setSelectedOption('yes')}
         disabled={!isActive || hasVoted}
-        sx={{ flex: 1, maxWidth: 200 }}
+        className="flex-1 max-w-[200px] flex items-center gap-2"
       >
+        <ThumbsUpIcon className="w-5 h-5" />
         Yes
         {showResults && options[0] && (
-          <Chip
-            label={`${options[0].votes} (${options[0].percentage}%)`}
-            size="small"
-            sx={{ ml: 1 }}
-          />
+          <Badge variant="secondary" className="ml-2">
+            {options[0].votes} ({options[0].percentage}%)
+          </Badge>
         )}
       </Button>
       <Button
-        variant={selectedOption === 'no' ? 'contained' : 'outlined'}
-        color="error"
-        size="large"
-        startIcon={<ThumbsDown />}
+        variant={selectedOption === 'no' ? 'primary' : 'outline'}
+        size="lg"
         onClick={() => setSelectedOption('no')}
         disabled={!isActive || hasVoted}
-        sx={{ flex: 1, maxWidth: 200 }}
+        className="flex-1 max-w-[200px] flex items-center gap-2 hover:border-red-600 hover:text-red-600"
       >
+        <ThumbsDownIcon className="w-5 h-5" />
         No
         {showResults && options[1] && (
-          <Chip
-            label={`${options[1].votes} (${options[1].percentage}%)`}
-            size="small"
-            sx={{ ml: 1 }}
-          />
+          <Badge variant="secondary" className="ml-2">
+            {options[1].votes} ({options[1].percentage}%)
+          </Badge>
         )}
       </Button>
-    </Box>
+    </div>
   );
 
   const renderMultipleChoice = () => (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <div className="space-y-2">
       {options.map((option) => (
         <motion.div
           key={option.id}
           whileHover={{ scale: isActive && !hasVoted ? 1.02 : 1 }}
           whileTap={{ scale: isActive && !hasVoted ? 0.98 : 1 }}
         >
-          <Box
+          <div
             onClick={() => !hasVoted && isActive && setSelectedOption(option.id)}
-            sx={{
-              p: 2,
-              border: 2,
-              borderColor: selectedOption === option.id ? 'primary.main' : 'divider',
-              borderRadius: 2,
-              cursor: isActive && !hasVoted ? 'pointer' : 'default',
-              bgcolor: selectedOption === option.id ? 'primary.50' : 'background.paper',
-              transition: 'all 0.2s ease',
-              opacity: !isActive || hasVoted ? 0.7 : 1,
-              position: 'relative',
-              overflow: 'hidden',
-            }}
+            className={`relative p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 ${
+              selectedOption === option.id 
+                ? 'border-primary-600 bg-primary-50' 
+                : 'border-gray-200 bg-white hover:border-gray-300'
+            } ${
+              !isActive || hasVoted ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Box>
-                <Typography variant="body1" fontWeight={500}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-gray-900">
                   {option.text}
-                </Typography>
+                </p>
                 {option.description && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                  <p className="text-sm text-gray-600 mt-1">
                     {option.description}
-                  </Typography>
+                  </p>
                 )}
-              </Box>
+              </div>
               {userVote === option.id && (
-                <CheckCircle2 size={20} color="primary" />
+                <CheckCircleIcon className="w-5 h-5 text-primary-600" />
               )}
-            </Box>
+            </div>
             
             {showResults && (
               <>
-                <LinearProgress
-                  variant="determinate"
-                  value={option.percentage || 0}
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 4,
-                  }}
+                <div 
+                  className="absolute bottom-0 left-0 right-0 h-1 bg-primary-600 transition-all duration-300"
+                  style={{ width: `${option.percentage || 0}%` }}
                 />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    position: 'absolute',
-                    bottom: 8,
-                    right: 12,
-                    fontWeight: 600,
-                  }}
-                >
+                <span className="absolute bottom-2 right-3 text-xs font-semibold text-gray-700">
                   {option.votes} votes ({option.percentage}%)
-                </Typography>
+                </span>
               </>
             )}
-          </Box>
+          </div>
         </motion.div>
       ))}
-    </Box>
+    </div>
   );
 
   const renderConsensusScale = () => (
-    <Box sx={{ px: 3, py: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="body2" color="error.main" fontWeight={500}>
+    <div className="px-6 py-4">
+      <div className="flex justify-between mb-6">
+        <span className="text-sm font-medium text-red-600">
           Strongly Disagree
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
+        </span>
+        <span className="text-sm text-gray-500">
           Neutral
-        </Typography>
-        <Typography variant="body2" color="success.main" fontWeight={500}>
+        </span>
+        <span className="text-sm font-medium text-green-600">
           Strongly Agree
-        </Typography>
-      </Box>
+        </span>
+      </div>
       
-      <VotingSlider
-        value={consensusValue}
+      <Slider
+        value={consensusValue * 100}
         onChange={(value) => {
-          setConsensusValue(value);
-          setSelectedOption(value);
+          const normalizedValue = value / 100;
+          setConsensusValue(normalizedValue);
+          setSelectedOption(normalizedValue);
         }}
         disabled={!isActive || hasVoted}
-        showValue
-        showTicks
-        tickCount={5}
+        min={0}
+        max={100}
+        step={1}
       />
       
       {showResults && (
-        <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <p className="text-sm text-gray-600 mb-2">
             Average Consensus
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <LinearProgress
-              variant="determinate"
-              value={consensusValue * 100}
-              sx={{ flex: 1, height: 8, borderRadius: 4 }}
-            />
-            <Typography variant="h6" fontWeight={600}>
+          </p>
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary-600 transition-all duration-300"
+                style={{ width: `${consensusValue * 100}%` }}
+              />
+            </div>
+            <span className="text-xl font-semibold text-gray-900">
               {((consensusValue * 2 - 1) * 100).toFixed(0)}%
-            </Typography>
-          </Box>
-        </Box>
+            </span>
+          </div>
+        </div>
       )}
-    </Box>
+    </div>
   );
 
   const renderScaleVoting = () => (
-    <Box sx={{ px: 3, py: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-around', mb: 2 }}>
+    <div className="px-6 py-4">
+      <div className="flex justify-center gap-3 mb-4">
         {[1, 2, 3, 4, 5].map((value) => (
-          <IconButton
+          <button
             key={value}
             onClick={() => setSelectedOption(value)}
             disabled={!isActive || hasVoted}
-            sx={{
-              width: 48,
-              height: 48,
-              border: 2,
-              borderColor: selectedOption === value ? 'primary.main' : 'divider',
-              bgcolor: selectedOption === value ? 'primary.main' : 'background.paper',
-              color: selectedOption === value ? 'white' : 'text.primary',
-              '&:hover': {
-                bgcolor: selectedOption === value ? 'primary.dark' : 'grey.100',
-              },
-            }}
+            className={`w-12 h-12 rounded-lg border-2 font-semibold transition-all duration-200 ${
+              selectedOption === value
+                ? 'border-primary-600 bg-primary-600 text-white'
+                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
+            } ${
+              !isActive || hasVoted ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            <Typography variant="h6" fontWeight={600}>
-              {value}
-            </Typography>
-          </IconButton>
+            {value}
+          </button>
         ))}
-      </Box>
+      </div>
       
       {showResults && (
-        <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-          <Typography variant="body2" color="text.secondary" gutterBottom>
+        <div className="mt-4 p-4 bg-gray-50 rounded-lg text-center">
+          <p className="text-sm text-gray-600 mb-1">
             Average Rating
-          </Typography>
-          <Typography variant="h4" fontWeight={600} color="primary.main">
+          </p>
+          <p className="text-3xl font-bold text-primary-600">
             {(totalVotes > 0 ? (options.reduce((sum, opt) => sum + opt.votes * Number(opt.id), 0) / totalVotes) : 0).toFixed(1)}
-          </Typography>
-        </Box>
+          </p>
+        </div>
       )}
-    </Box>
+    </div>
   );
 
   const renderVotingContent = () => {
@@ -280,95 +256,83 @@ export const VotingPanel: React.FC<VotingPanelProps> = ({
   };
 
   return (
-    <Box
-      sx={{
-        bgcolor: 'background.paper',
-        borderRadius: 2,
-        p: 3,
-        border: 1,
-        borderColor: 'divider',
-      }}
-    >
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-          <Typography variant="h6" fontWeight={600}>
-            {question}
-          </Typography>
-          {timeRemaining !== undefined && isActive && (
-            <Chip
-              icon={<Clock size={16} />}
-              label={formatTime(timeRemaining)}
-              size="small"
-              color={timeRemaining < 30 ? 'error' : 'default'}
-            />
+    <Card>
+      <CardBody>
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {question}
+            </h3>
+            {timeRemaining !== undefined && isActive && (
+              <Badge 
+                variant={timeRemaining < 30 ? 'error' : 'secondary'}
+                className="flex items-center gap-1"
+              >
+                <ClockIcon className="w-3 h-3" />
+                {formatTime(timeRemaining)}
+              </Badge>
+            )}
+          </div>
+          
+          {description && (
+            <p className="text-sm text-gray-600 mb-3">
+              {description}
+            </p>
           )}
-        </Box>
-        
-        {description && (
-          <Typography variant="body2" color="text.secondary">
-            {description}
-          </Typography>
-        )}
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-          <Chip
-            icon={<BarChart3 size={16} />}
-            label={`${totalVotes} votes`}
-            size="small"
-            variant="outlined"
-          />
-          {!isActive && (
-            <Chip
-              label="Voting Ended"
-              size="small"
-              color="default"
-            />
-          )}
-        </Box>
-      </Box>
+          
+          <div className="flex items-center gap-3">
+            <Badge variant="secondary" className="flex items-center gap-1">
+              <BarChartIcon className="w-3 h-3" />
+              {totalVotes} votes
+            </Badge>
+            {!isActive && (
+              <Badge variant="secondary">
+                Voting Ended
+              </Badge>
+            )}
+          </div>
+        </div>
 
       {/* Voting content */}
       <AnimatePresence mode="wait">
         {renderVotingContent()}
       </AnimatePresence>
 
-      {/* Actions */}
-      <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
-        {isActive && !hasVoted && (
-          <Button
-            variant="contained"
-            fullWidth
-            onClick={handleVote}
-            disabled={selectedOption === null}
-          >
-            Submit Vote
-          </Button>
-        )}
-        
-        {hasVoted && isActive && (
-          <Box sx={{ flex: 1, textAlign: 'center', py: 1 }}>
-            <Chip
-              icon={<CheckCircle2 size={16} />}
-              label="Vote Submitted"
-              color="success"
-            />
-          </Box>
-        )}
-        
-        {onEndVoting && isActive && (
-          <Tooltip title="End voting session">
-            <IconButton
-              onClick={onEndVoting}
-              color="error"
-              sx={{ ml: 'auto' }}
+        {/* Actions */}
+        <div className="flex items-center gap-3 mt-6">
+          {isActive && !hasVoted && (
+            <Button
+              variant="primary"
+              fullWidth
+              onClick={handleVote}
+              disabled={selectedOption === null}
             >
-              <XCircle size={20} />
-            </IconButton>
-          </Tooltip>
-        )}
-      </Box>
-    </Box>
+              Submit Vote
+            </Button>
+          )}
+          
+          {hasVoted && isActive && (
+            <div className="flex-1 text-center">
+              <Badge variant="success" className="inline-flex items-center gap-1">
+                <CheckCircleIcon className="w-4 h-4" />
+                Vote Submitted
+              </Badge>
+            </div>
+          )}
+          
+          {onEndVoting && isActive && (
+            <button
+              onClick={onEndVoting}
+              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-auto"
+              title="End voting session"
+            >
+              <XIcon className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+      </CardBody>
+    </Card>
   );
 };
 

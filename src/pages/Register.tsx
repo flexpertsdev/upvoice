@@ -1,25 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import {
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  Divider,
-  Alert,
-  CircularProgress,
-  IconButton,
-  InputAdornment,
-  Checkbox,
-  FormControlLabel,
-  Stepper,
-  Step,
-  StepLabel,
-  useTheme,
-  alpha,
-} from '@mui/material';
+import { Button, Input, Card, CardBody, Badge } from '@components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   GoogleIcon,
@@ -28,13 +9,11 @@ import {
   LockIcon,
   PersonIcon,
   BusinessIcon,
-  VisibilityIcon,
-  VisibilityOffIcon,
+  EyeIcon,
+  EyeOffIcon,
   CheckCircleIcon,
+  CheckIcon,
 } from '@components/icons';
-import { useAuthStore } from '@stores/auth.store';
-import { useForm } from '@hooks/useForm';
-import toast from 'react-hot-toast';
 
 interface RegisterFormData {
   displayName: string;
@@ -45,377 +24,359 @@ interface RegisterFormData {
   acceptTerms: boolean;
 }
 
-const initialFormData: RegisterFormData = {
-  displayName: '',
-  email: '',
-  password: '',
-  confirmPassword: '',
-  organizationName: '',
-  acceptTerms: false,
-};
-
-const validationRules = {
-  displayName: {
-    required: true,
-    minLength: 2,
-  },
-  email: {
-    required: true,
-    email: true,
-  },
-  password: {
-    required: true,
-    minLength: 8,
-    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-  },
-  confirmPassword: {
-    required: true,
-    match: 'password',
-  },
-  acceptTerms: {
-    required: true,
-  },
-};
-
 const steps = ['Account Info', 'Organization', 'Complete'];
 
-export const Register: React.FC = () => {
+const Register: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const { createAccount, isLoading, error, clearError } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [registrationType, setRegistrationType] = useState<'personal' | 'organization'>('personal');
-
-  const {
-    values,
-    errors,
-    touched,
-    isValid,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    validateField,
-  } = useForm<RegisterFormData>(initialFormData, validationRules);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  const [formData, setFormData] = useState<RegisterFormData>({
+    displayName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    organizationName: '',
+    acceptTerms: false,
+  });
 
   const handleNext = () => {
+    setError('');
+    
     if (activeStep === 0) {
-      // Validate first step fields
-      const fieldsToValidate = ['displayName', 'email', 'password', 'confirmPassword'];
-      let hasErrors = false;
-      fieldsToValidate.forEach(field => {
-        if (!validateField(field as keyof RegisterFormData)) {
-          hasErrors = true;
-        }
-      });
-      if (hasErrors) return;
+      // Validate first step
+      if (!formData.displayName || !formData.email || !formData.password || !formData.confirmPassword) {
+        setError('Please fill in all fields');
+        return;
+      }
+      
+      if (!formData.email.includes('@')) {
+        setError('Please enter a valid email');
+        return;
+      }
+      
+      if (formData.password.length < 8) {
+        setError('Password must be at least 8 characters');
+        return;
+      }
+      
+      if (formData.password !== formData.confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
     }
-    setActiveStep((prev) => prev + 1);
+    
+    if (activeStep === 1 && !formData.acceptTerms) {
+      setError('Please accept the terms and conditions');
+      return;
+    }
+    
+    setActiveStep(prev => prev + 1);
   };
 
   const handleBack = () => {
-    setActiveStep((prev) => prev - 1);
+    setActiveStep(prev => prev - 1);
   };
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const handleSubmit = async () => {
+    setIsLoading(true);
+    setError('');
+    
     try {
-      const organizationId = registrationType === 'organization' ? 'new-org' : undefined;
-      await createAccount(
-        data.email,
-        data.password,
-        data.displayName,
-        organizationId
-      );
-      toast.success('Account created successfully!');
+      // Simulate registration
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // For demo, create user session
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('userEmail', formData.email);
+      localStorage.setItem('userDisplayName', formData.displayName);
+      localStorage.setItem('isAuthenticated', 'true');
+      
+      if (registrationType === 'organization' && formData.organizationName) {
+        localStorage.setItem('organizationName', formData.organizationName);
+      }
+      
       navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to create account');
+    } catch (err) {
+      setError('Failed to create account. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleGoogleSignUp = async () => {
-    try {
-      // TODO: Implement Google sign-up
-      toast.error('Google sign-up coming soon!');
-    } catch (error) {
-      toast.error('Failed to sign up with Google');
-    }
+  const handleSocialRegister = (provider: 'google' | 'microsoft') => {
+    // For demo, simulate social registration
+    const userId = `${provider}_user_${Date.now()}`;
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('userEmail', `demo@${provider}.com`);
+    localStorage.setItem('userDisplayName', `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`);
+    localStorage.setItem('isAuthenticated', 'true');
+    navigate('/dashboard');
   };
 
-  const handleMicrosoftSignUp = async () => {
-    try {
-      // TODO: Implement Microsoft sign-up
-      toast.error('Microsoft sign-up coming soon!');
-    } catch (error) {
-      toast.error('Failed to sign up with Microsoft');
-    }
-  };
-
-  React.useEffect(() => {
-    return () => {
-      clearError();
-    };
-  }, [clearError]);
+  const renderStepIndicator = () => (
+    <div className="flex items-center justify-center mb-8">
+      {steps.map((step, index) => (
+        <React.Fragment key={step}>
+          <div className="flex items-center">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
+                index <= activeStep
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {index < activeStep ? <CheckIcon className="w-5 h-5" /> : index + 1}
+            </div>
+            <span className={`ml-2 text-sm ${
+              index <= activeStep ? 'text-gray-900' : 'text-gray-500'
+            }`}>
+              {step}
+            </span>
+          </div>
+          {index < steps.length - 1 && (
+            <div className={`w-12 h-0.5 mx-3 transition-colors ${
+              index < activeStep ? 'bg-primary-600' : 'bg-gray-200'
+            }`} />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
 
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
         return (
-          <Box>
-            <TextField
-              fullWidth
-              label="Full Name"
-              name="displayName"
-              value={values.displayName}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.displayName && !!errors.displayName}
-              helperText={touched.displayName && errors.displayName}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PersonIcon />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 3 }}
-              autoComplete="name"
-              autoFocus
-            />
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <PersonIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="displayName"
+                  type="text"
+                  value={formData.displayName}
+                  onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                  className="pl-10"
+                  placeholder="John Doe"
+                  autoComplete="name"
+                  autoFocus
+                />
+              </div>
+            </div>
 
-            <TextField
-              fullWidth
-              label="Email"
-              name="email"
-              type="email"
-              value={values.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.email && !!errors.email}
-              helperText={touched.email && errors.email}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailIcon />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 3 }}
-              autoComplete="email"
-            />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                Email
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <EmailIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="pl-10"
+                  placeholder="you@example.com"
+                  autoComplete="email"
+                />
+              </div>
+            </div>
 
-            <TextField
-              fullWidth
-              label="Password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.password && !!errors.password}
-              helperText={
-                touched.password && errors.password
-                  ? errors.password
-                  : 'At least 8 characters with uppercase, lowercase, number, and special character'
-              }
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                      aria-label="toggle password visibility"
-                    >
-                      {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ mb: 3 }}
-              autoComplete="new-password"
-            />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LockIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="pl-10 pr-10"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOffIcon className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                At least 8 characters with uppercase, lowercase, number, and special character
+              </p>
+            </div>
 
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={values.confirmPassword}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={touched.confirmPassword && !!errors.confirmPassword}
-              helperText={touched.confirmPassword && errors.confirmPassword}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockIcon />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      edge="end"
-                      aria-label="toggle confirm password visibility"
-                    >
-                      {showConfirmPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              autoComplete="new-password"
-            />
-          </Box>
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LockIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  className="pl-10 pr-10"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showConfirmPassword ? (
+                    <EyeOffIcon className="h-5 w-5 text-gray-400" />
+                  ) : (
+                    <EyeIcon className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
         );
 
       case 1:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              How will you use upVoice?
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              This helps us personalize your experience
-            </Typography>
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                How will you use upVoice?
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                This helps us personalize your experience
+              </p>
+            </div>
 
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-              <Paper
-                sx={{
-                  flex: 1,
-                  p: 3,
-                  cursor: 'pointer',
-                  border: 2,
-                  borderColor: registrationType === 'personal' ? 'primary.main' : 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    transform: 'translateY(-2px)',
-                  },
-                }}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
                 onClick={() => setRegistrationType('personal')}
+                className={`p-6 rounded-lg border-2 transition-all text-left ${
+                  registrationType === 'personal'
+                    ? 'border-primary-600 bg-primary-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
               >
-                <PersonIcon sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-                  Personal Use
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <PersonIcon className="w-10 h-10 text-primary-600 mb-3" />
+                <h4 className="font-semibold text-gray-900 mb-1">Personal Use</h4>
+                <p className="text-sm text-gray-600">
                   For individual projects and small teams
-                </Typography>
-              </Paper>
+                </p>
+              </button>
 
-              <Paper
-                sx={{
-                  flex: 1,
-                  p: 3,
-                  cursor: 'pointer',
-                  border: 2,
-                  borderColor: registrationType === 'organization' ? 'primary.main' : 'divider',
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    transform: 'translateY(-2px)',
-                  },
-                }}
+              <button
                 onClick={() => setRegistrationType('organization')}
+                className={`p-6 rounded-lg border-2 transition-all text-left ${
+                  registrationType === 'organization'
+                    ? 'border-primary-600 bg-primary-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
               >
-                <BusinessIcon sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-                  Organization
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <BusinessIcon className="w-10 h-10 text-primary-600 mb-3" />
+                <h4 className="font-semibold text-gray-900 mb-1">Organization</h4>
+                <p className="text-sm text-gray-600">
                   For companies and larger teams
-                </Typography>
-              </Paper>
-            </Box>
+                </p>
+              </button>
+            </div>
 
             {registrationType === 'organization' && (
-              <TextField
-                fullWidth
-                label="Organization Name"
-                name="organizationName"
-                value={values.organizationName}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <BusinessIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ mb: 3 }}
-              />
+              <div>
+                <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Organization Name
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <BusinessIcon className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    id="organizationName"
+                    type="text"
+                    value={formData.organizationName}
+                    onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                    className="pl-10"
+                    placeholder="Acme Corp"
+                  />
+                </div>
+              </div>
             )}
 
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="acceptTerms"
-                  checked={values.acceptTerms}
-                  onChange={handleChange}
-                />
-              }
-              label={
-                <Typography variant="body2">
-                  I agree to the{' '}
-                  <Link
-                    to="/terms"
-                    target="_blank"
-                    style={{ color: theme.palette.primary.main }}
-                  >
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link
-                    to="/privacy"
-                    target="_blank"
-                    style={{ color: theme.palette.primary.main }}
-                  >
-                    Privacy Policy
-                  </Link>
-                </Typography>
-              }
-            />
-          </Box>
+            <label className="flex items-start cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.acceptTerms}
+                onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 mt-0.5"
+              />
+              <span className="ml-2 text-sm text-gray-600">
+                I agree to the{' '}
+                <Link to="/terms" className="text-primary-600 hover:text-primary-700">
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link to="/privacy" className="text-primary-600 hover:text-primary-700">
+                  Privacy Policy
+                </Link>
+              </span>
+            </label>
+          </div>
         );
 
       case 2:
         return (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
+          <div className="text-center py-8">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', duration: 0.6 }}
+              className="inline-block"
             >
-              <CheckCircleIcon
-                sx={{ fontSize: 80, color: 'success.main', mb: 2 }}
-              />
+              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircleIcon className="w-10 h-10 text-green-600" />
+              </div>
             </motion.div>
-            <Typography variant="h5" gutterBottom fontWeight={600}>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">
               You're all set!
-            </Typography>
-            <Typography variant="body1" color="text.secondary" paragraph>
-              Welcome to upVoice, {values.displayName}
-            </Typography>
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Welcome to upVoice, {formData.displayName}
+            </p>
             <Button
-              variant="contained"
-              size="large"
-              onClick={handleSubmit(onSubmit)}
-              disabled={!isValid || isLoading}
+              variant="primary"
+              size="lg"
+              onClick={handleSubmit}
+              loading={isLoading}
+              disabled={isLoading}
             >
-              {isLoading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Get Started'
-              )}
+              Get Started
             </Button>
-          </Box>
+          </div>
         );
 
       default:
@@ -424,129 +385,110 @@ export const Register: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            borderRadius: 3,
-            background: alpha(theme.palette.background.paper, 0.9),
-            backdropFilter: 'blur(10px)',
-          }}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Typography variant="h4" gutterBottom fontWeight={600}>
-              Create Account
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Join upVoice to start transforming discussions
-            </Typography>
-          </Box>
+          <Card>
+            <CardBody className="p-8">
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h1>
+                <p className="text-gray-600">Join upVoice to start transforming discussions</p>
+              </div>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 3 }} onClose={clearError}>
-              {error}
-            </Alert>
-          )}
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm mb-6">
+                  {error}
+                </div>
+              )}
 
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-            {steps.map((label) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
+              {renderStepIndicator()}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeStep}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {renderStepContent()}
-            </motion.div>
-          </AnimatePresence>
-
-          {activeStep < 2 && (
-            <>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeStep}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  Back
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                >
-                  Next
-                </Button>
-              </Box>
+                  {renderStepContent()}
+                </motion.div>
+              </AnimatePresence>
 
-              {activeStep === 0 && (
+              {activeStep < 2 && (
                 <>
-                  <Divider sx={{ my: 3 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      OR
-                    </Typography>
-                  </Divider>
-
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <div className="flex justify-between mt-8">
                     <Button
-                      fullWidth
-                      variant="outlined"
-                      size="large"
-                      startIcon={<GoogleIcon />}
-                      onClick={handleGoogleSignUp}
-                      disabled={isLoading}
+                      variant="ghost"
+                      onClick={handleBack}
+                      disabled={activeStep === 0}
                     >
-                      Continue with Google
+                      Back
                     </Button>
-
                     <Button
-                      fullWidth
-                      variant="outlined"
-                      size="large"
-                      startIcon={<MicrosoftIcon />}
-                      onClick={handleMicrosoftSignUp}
-                      disabled={isLoading}
+                      variant="primary"
+                      onClick={handleNext}
                     >
-                      Continue with Microsoft
+                      Next
                     </Button>
-                  </Box>
+                  </div>
+
+                  {activeStep === 0 && (
+                    <>
+                      <div className="relative mt-8">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                          <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3 mt-6">
+                        <Button
+                          variant="outline"
+                          fullWidth
+                          onClick={() => handleSocialRegister('google')}
+                          className="flex items-center justify-center gap-3"
+                        >
+                          <GoogleIcon className="w-5 h-5" />
+                          Continue with Google
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          fullWidth
+                          onClick={() => handleSocialRegister('microsoft')}
+                          className="flex items-center justify-center gap-3"
+                        >
+                          <MicrosoftIcon className="w-5 h-5" />
+                          Continue with Microsoft
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
-            </>
-          )}
 
-          {activeStep < 2 && (
-            <Box sx={{ mt: 3, textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary">
-                Already have an account?{' '}
-                <Link
-                  to="/login"
-                  style={{
-                    color: theme.palette.primary.main,
-                    textDecoration: 'none',
-                    fontWeight: 600,
-                  }}
-                >
-                  Sign in
-                </Link>
-              </Typography>
-            </Box>
-          )}
-        </Paper>
-      </motion.div>
-    </Container>
+              {activeStep < 2 && (
+                <div className="text-center mt-6">
+                  <p className="text-sm text-gray-600">
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+                      Sign in
+                    </Link>
+                  </p>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </motion.div>
+      </div>
+    </div>
   );
 };
 

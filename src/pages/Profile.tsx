@@ -1,34 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Grid,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  Avatar,
-  Tabs,
-  Tab,
-  Switch,
-  FormControlLabel,
-  Divider,
-  Alert,
-  CircularProgress,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  useTheme,
-  alpha,
-} from '@mui/material';
+import { Button, Card, CardBody, CardHeader, Badge, Input, Loading, Avatar } from '@components/ui';
 import { motion } from 'framer-motion';
 import {
   PersonIcon,
@@ -41,11 +13,10 @@ import {
   EditIcon,
   DeleteIcon,
   LogoutIcon,
+  LockIcon,
+  CheckIcon,
+  ChevronRightIcon,
 } from '@components/icons';
-import { useAuthStore } from '@stores/auth.store';
-import { useForm } from '@hooks/useForm';
-import type { UserPreferences } from '@/types';
-import toast from 'react-hot-toast';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -53,16 +24,15 @@ interface TabPanelProps {
   value: number;
 }
 
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index, ...other }) => {
+const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   return (
     <div
       role="tabpanel"
       hidden={value !== index}
       id={`profile-tabpanel-${index}`}
       aria-labelledby={`profile-tab-${index}`}
-      {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <div className="py-6">{children}</div>}
     </div>
   );
 };
@@ -75,620 +45,492 @@ interface ProfileFormData {
   confirmPassword?: string;
 }
 
-export const Profile: React.FC = () => {
+const Profile: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const { user, updateUser, signOut } = useAuthStore();
   const [tabValue, setTabValue] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [preferences, setPreferences] = useState<UserPreferences>(
-    user?.preferences || {
-      theme: 'system',
-      language: 'en',
-      notifications: {
-        email: true,
-        push: true,
-        sessionStart: true,
-        sessionEnd: true,
-        mentions: true,
-        reports: false,
-      },
-      privacy: {
-        showEmail: false,
-        allowAnalytics: true,
-        shareDataWithOrg: true,
-      },
-      accessibility: {
-        reducedMotion: false,
-        highContrast: false,
-        fontSize: 'medium',
-        keyboardNavigation: true,
-      },
-    }
-  );
+  const [error, setError] = useState('');
+  
+  // Get user from localStorage (simplified for demo)
+  const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+  const userDisplayName = localStorage.getItem('userDisplayName') || 'Demo User';
+  const userId = localStorage.getItem('userId') || 'demo-user-id';
+  
+  const [formData, setFormData] = useState<ProfileFormData>({
+    displayName: userDisplayName,
+    email: userEmail,
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
-  const initialFormData: ProfileFormData = {
-    displayName: user?.displayName || '',
-    email: user?.email || '',
-  };
-
-  const validationRules = {
-    displayName: {
-      required: true,
-      minLength: 2,
-    },
-    email: {
-      required: true,
+  const [preferences, setPreferences] = useState({
+    theme: 'system',
+    notifications: {
       email: true,
+      push: true,
+      sessionStart: true,
+      sessionEnd: true,
+      mentions: true,
     },
-    currentPassword: {
-      minLength: 6,
+    privacy: {
+      showEmail: false,
+      allowAnalytics: true,
     },
-    newPassword: {
-      minLength: 8,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    accessibility: {
+      reducedMotion: false,
+      highContrast: false,
     },
-    confirmPassword: {
-      match: 'newPassword',
-    },
-  };
+  });
 
-  const {
-    values,
-    errors,
-    touched,
-    isValid,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-  } = useForm<ProfileFormData>(initialFormData, validationRules);
-
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
-
-  const handleProfileUpdate = async (data: ProfileFormData) => {
+  const handleProfileUpdate = async () => {
     setIsLoading(true);
+    setError('');
+    
     try {
-      // TODO: Implement profile update
-      updateUser({
-        displayName: data.displayName,
-      });
-      toast.success('Profile updated successfully');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      localStorage.setItem('userDisplayName', formData.displayName);
+      localStorage.setItem('userEmail', formData.email);
       setIsEditing(false);
-    } catch (error) {
-      toast.error('Failed to update profile');
+    } catch (err) {
+      setError('Failed to update profile');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handlePasswordChange = async () => {
-    if (!values.currentPassword || !values.newPassword) {
-      toast.error('Please fill in all password fields');
+    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
+      setError('Please fill in all password fields');
       return;
     }
-
+    
+    if (formData.newPassword !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    
     setIsLoading(true);
+    setError('');
+    
     try {
-      // TODO: Implement password change
-      toast.success('Password changed successfully');
-      values.currentPassword = '';
-      values.newPassword = '';
-      values.confirmPassword = '';
-    } catch (error) {
-      toast.error('Failed to change password');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setFormData({ ...formData, currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setError('Failed to change password');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handlePreferenceChange = (path: string, value: any) => {
-    const keys = path.split('.');
-    const newPreferences = { ...preferences };
-    let current: any = newPreferences;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-      current = current[keys[i]];
-    }
-    current[keys[keys.length - 1]] = value;
-
-    setPreferences(newPreferences);
-    // TODO: Save preferences to backend
-  };
-
   const handleDeleteAccount = async () => {
     setIsLoading(true);
     try {
-      // TODO: Implement account deletion
-      toast.success('Account deleted successfully');
-      await signOut();
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      localStorage.clear();
       navigate('/');
-    } catch (error) {
-      toast.error('Failed to delete account');
+    } catch (err) {
+      setError('Failed to delete account');
     } finally {
       setIsLoading(false);
       setShowDeleteDialog(false);
     }
   };
 
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setIsLoading(true);
-    try {
-      // TODO: Implement avatar upload
-      toast.success('Avatar updated successfully');
-    } catch (error) {
-      toast.error('Failed to upload avatar');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSignOut = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
+    navigate('/login');
   };
 
-  if (!user) {
-    return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="warning">
-          Please sign in to view your profile
-        </Alert>
-      </Container>
-    );
-  }
+  const tabs = [
+    { icon: PersonIcon, label: 'General' },
+    { icon: NotificationsIcon, label: 'Notifications' },
+    { icon: SecurityIcon, label: 'Security' },
+    { icon: PaletteIcon, label: 'Appearance' },
+  ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Typography variant="h4" fontWeight={600} gutterBottom>
-          My Profile
-        </Typography>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">My Profile</h1>
 
-        <Grid container spacing={3}>
-          {/* Profile Overview */}
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Box sx={{ position: 'relative', display: 'inline-block', mb: 3 }}>
-                <Avatar
-                  src={user.photoURL || undefined}
-                  sx={{ width: 120, height: 120 }}
-                >
-                  {user.displayName?.[0] || user.email?.[0]}
-                </Avatar>
-                <input
-                  accept="image/*"
-                  id="avatar-upload"
-                  type="file"
-                  style={{ display: 'none' }}
-                  onChange={handleAvatarUpload}
-                />
-                <label htmlFor="avatar-upload">
-                  <IconButton
-                    component="span"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 0,
-                      right: 0,
-                      backgroundColor: 'background.paper',
-                      boxShadow: theme.shadows[2],
-                      '&:hover': {
-                        backgroundColor: 'background.paper',
-                      },
-                    }}
-                  >
-                    <CameraIcon />
-                  </IconButton>
-                </label>
-              </Box>
-
-              <Typography variant="h6" gutterBottom>
-                {user.displayName}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {user.email}
-              </Typography>
-
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 3 }}>
-                <Chip
-                  label={user.role}
-                  size="small"
-                  color="primary"
-                  variant="outlined"
-                />
-                {user.organizationId && (
-                  <Chip
-                    label={user.organizationRole || 'member'}
-                    size="small"
-                    variant="outlined"
-                  />
-                )}
-              </Box>
-
-              <Divider sx={{ my: 2 }} />
-
-              <List dense>
-                <ListItem>
-                  <ListItemText
-                    primary="Sessions Created"
-                    secondary={user.sessionsCreated}
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemText
-                    primary="Sessions Joined"
-                    secondary={user.sessionsParticipated}
-                  />
-                </ListItem>
-                <ListItem>
-                  <ListItemText
-                    primary="Total Messages"
-                    secondary={user.totalMessages}
-                  />
-                </ListItem>
-              </List>
-
-              <Box sx={{ mt: 3 }}>
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  startIcon={<LogoutIcon />}
-                  onClick={signOut}
-                >
-                  Sign Out
-                </Button>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Settings Tabs */}
-          <Grid item xs={12} md={8}>
-            <Paper sx={{ p: 3 }}>
-              <Tabs
-                value={tabValue}
-                onChange={handleTabChange}
-                sx={{ borderBottom: 1, borderColor: 'divider' }}
-              >
-                <Tab icon={<PersonIcon />} label="General" />
-                <Tab icon={<NotificationsIcon />} label="Notifications" />
-                <Tab icon={<SecurityIcon />} label="Security" />
-                <Tab icon={<PaletteIcon />} label="Appearance" />
-                {user.organizationId && (
-                  <Tab icon={<BusinessIcon />} label="Organization" />
-                )}
-              </Tabs>
-
-              {/* General Tab */}
-              <TabPanel value={tabValue} index={0}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h6">Profile Information</Typography>
-                  {!isEditing && (
-                    <Button
-                      startIcon={<EditIcon />}
-                      onClick={() => setIsEditing(true)}
-                    >
-                      Edit
-                    </Button>
-                  )}
-                </Box>
-
-                <form onSubmit={handleSubmit(handleProfileUpdate)}>
-                  <TextField
-                    fullWidth
-                    label="Display Name"
-                    name="displayName"
-                    value={values.displayName}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.displayName && !!errors.displayName}
-                    helperText={touched.displayName && errors.displayName}
-                    disabled={!isEditing}
-                    sx={{ mb: 3 }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    name="email"
-                    value={values.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={touched.email && !!errors.email}
-                    helperText={touched.email && errors.email}
-                    disabled={!isEditing || user.isAnonymous}
-                    sx={{ mb: 3 }}
-                  />
-
-                  {isEditing && (
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <Button
-                        variant="contained"
-                        type="submit"
-                        disabled={!isValid || isLoading}
-                      >
-                        {isLoading ? <CircularProgress size={20} /> : 'Save Changes'}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </Box>
-                  )}
-                </form>
-              </TabPanel>
-
-              {/* Notifications Tab */}
-              <TabPanel value={tabValue} index={1}>
-                <Typography variant="h6" gutterBottom>
-                  Notification Preferences
-                </Typography>
-
-                <List>
-                  <ListItem>
-                    <ListItemText
-                      primary="Email Notifications"
-                      secondary="Receive notifications via email"
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Profile Overview */}
+            <div className="lg:col-span-1">
+              <Card>
+                <CardBody className="text-center">
+                  <div className="relative inline-block mb-4">
+                    <Avatar 
+                      size="xl" 
+                      name={userDisplayName}
+                      className="w-24 h-24"
                     />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.notifications.email}
-                        onChange={(e) => handlePreferenceChange('notifications.email', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
+                    <button className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-shadow">
+                      <CameraIcon className="w-4 h-4 text-gray-600" />
+                    </button>
+                  </div>
 
-                  <ListItem>
-                    <ListItemText
-                      primary="Push Notifications"
-                      secondary="Receive browser push notifications"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.notifications.push}
-                        onChange={(e) => handlePreferenceChange('notifications.push', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                    {userDisplayName}
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-4">{userEmail}</p>
 
-                  <Divider sx={{ my: 2 }} />
+                  <div className="flex justify-center gap-2 mb-6">
+                    <Badge variant="primary">Free Plan</Badge>
+                  </div>
 
-                  <ListItem>
-                    <ListItemText
-                      primary="Session Start"
-                      secondary="When a session you're invited to begins"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.notifications.sessionStart}
-                        onChange={(e) => handlePreferenceChange('notifications.sessionStart', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
+                  <div className="space-y-4 text-left border-t border-gray-200 pt-4">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Sessions Created</span>
+                      <span className="font-medium">12</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Sessions Joined</span>
+                      <span className="font-medium">45</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Total Messages</span>
+                      <span className="font-medium">327</span>
+                    </div>
+                  </div>
 
-                  <ListItem>
-                    <ListItemText
-                      primary="Session End"
-                      secondary="When a session you participated in ends"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.notifications.sessionEnd}
-                        onChange={(e) => handlePreferenceChange('notifications.sessionEnd', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-
-                  <ListItem>
-                    <ListItemText
-                      primary="Mentions"
-                      secondary="When someone mentions you in a message"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.notifications.mentions}
-                        onChange={(e) => handlePreferenceChange('notifications.mentions', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-              </TabPanel>
-
-              {/* Security Tab */}
-              <TabPanel value={tabValue} index={2}>
-                <Typography variant="h6" gutterBottom>
-                  Security Settings
-                </Typography>
-
-                {!user.isAnonymous && (
-                  <>
-                    <Box sx={{ mb: 4 }}>
-                      <Typography variant="subtitle1" gutterBottom>
-                        Change Password
-                      </Typography>
-                      
-                      <TextField
-                        fullWidth
-                        type="password"
-                        label="Current Password"
-                        name="currentPassword"
-                        value={values.currentPassword || ''}
-                        onChange={handleChange}
-                        sx={{ mb: 2 }}
-                      />
-
-                      <TextField
-                        fullWidth
-                        type="password"
-                        label="New Password"
-                        name="newPassword"
-                        value={values.newPassword || ''}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.newPassword && !!errors.newPassword}
-                        helperText={touched.newPassword && errors.newPassword}
-                        sx={{ mb: 2 }}
-                      />
-
-                      <TextField
-                        fullWidth
-                        type="password"
-                        label="Confirm New Password"
-                        name="confirmPassword"
-                        value={values.confirmPassword || ''}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        error={touched.confirmPassword && !!errors.confirmPassword}
-                        helperText={touched.confirmPassword && errors.confirmPassword}
-                        sx={{ mb: 2 }}
-                      />
-
-                      <Button
-                        variant="contained"
-                        onClick={handlePasswordChange}
-                        disabled={isLoading}
-                      >
-                        Change Password
-                      </Button>
-                    </Box>
-
-                    <Divider sx={{ my: 3 }} />
-                  </>
-                )}
-
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom color="error">
-                    Danger Zone
-                  </Typography>
-                  <Alert severity="warning" sx={{ mb: 2 }}>
-                    Deleting your account is permanent and cannot be undone.
-                  </Alert>
                   <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<DeleteIcon />}
-                    onClick={() => setShowDeleteDialog(true)}
+                    variant="outline"
+                    fullWidth
+                    onClick={handleSignOut}
+                    className="mt-6 flex items-center justify-center gap-2"
                   >
-                    Delete Account
+                    <LogoutIcon className="w-4 h-4" />
+                    Sign Out
                   </Button>
-                </Box>
-              </TabPanel>
+                </CardBody>
+              </Card>
+            </div>
 
-              {/* Appearance Tab */}
-              <TabPanel value={tabValue} index={3}>
-                <Typography variant="h6" gutterBottom>
-                  Appearance Settings
-                </Typography>
+            {/* Settings Tabs */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardBody>
+                  {/* Tab Navigation */}
+                  <div className="flex border-b border-gray-200 mb-6">
+                    {tabs.map((tab, index) => (
+                      <button
+                        key={tab.label}
+                        onClick={() => setTabValue(index)}
+                        className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                          tabValue === index
+                            ? 'text-primary-600 border-primary-600'
+                            : 'text-gray-600 border-transparent hover:text-gray-900'
+                        }`}
+                      >
+                        <tab.icon className="w-4 h-4" />
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
 
-                <List>
-                  <ListItem>
-                    <ListItemText
-                      primary="Theme"
-                      secondary="Choose your preferred color scheme"
-                    />
-                    <ListItemSecondaryAction>
-                      <Chip
-                        label={preferences.theme}
-                        onClick={() => {
-                          const themes = ['light', 'dark', 'system'];
-                          const currentIndex = themes.indexOf(preferences.theme);
-                          const nextTheme = themes[(currentIndex + 1) % themes.length];
-                          handlePreferenceChange('theme', nextTheme);
-                        }}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm mb-6">
+                      {error}
+                    </div>
+                  )}
 
-                  <ListItem>
-                    <ListItemText
-                      primary="Reduced Motion"
-                      secondary="Minimize animations and transitions"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.accessibility.reducedMotion}
-                        onChange={(e) => handlePreferenceChange('accessibility.reducedMotion', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
+                  {/* General Tab */}
+                  <TabPanel value={tabValue} index={0}>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Profile Information
+                      </h3>
+                      {!isEditing && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsEditing(true)}
+                          className="flex items-center gap-2"
+                        >
+                          <EditIcon className="w-4 h-4" />
+                          Edit
+                        </Button>
+                      )}
+                    </div>
 
-                  <ListItem>
-                    <ListItemText
-                      primary="High Contrast"
-                      secondary="Increase contrast for better visibility"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        checked={preferences.accessibility.highContrast}
-                        onChange={(e) => handlePreferenceChange('accessibility.highContrast', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-              </TabPanel>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Display Name
+                        </label>
+                        <Input
+                          value={formData.displayName}
+                          onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+                          disabled={!isEditing}
+                        />
+                      </div>
 
-              {/* Organization Tab */}
-              {user.organizationId && (
-                <TabPanel value={tabValue} index={4}>
-                  <Typography variant="h6" gutterBottom>
-                    Organization Settings
-                  </Typography>
-                  <Alert severity="info">
-                    Organization management features coming soon!
-                  </Alert>
-                </TabPanel>
-              )}
-            </Paper>
-          </Grid>
-        </Grid>
-      </motion.div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Email
+                        </label>
+                        <Input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          disabled={!isEditing}
+                        />
+                      </div>
 
-      {/* Delete Account Dialog */}
-      <Dialog
-        open={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Delete Account</DialogTitle>
-        <DialogContent>
-          <Alert severity="error" sx={{ mb: 2 }}>
-            This action cannot be undone!
-          </Alert>
-          <Typography>
-            Are you sure you want to delete your account? All your data, including:
-          </Typography>
-          <List dense>
-            <ListItem>• All created sessions</ListItem>
-            <ListItem>• Message history</ListItem>
-            <ListItem>• Analytics data</ListItem>
-            <ListItem>• Account settings</ListItem>
-          </List>
-          <Typography>
-            will be permanently deleted.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowDeleteDialog(false)}>
-            Cancel
-          </Button>
-          <Button
-            color="error"
-            variant="contained"
-            onClick={handleDeleteAccount}
-            disabled={isLoading}
-          >
-            {isLoading ? <CircularProgress size={20} /> : 'Delete Account'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+                      {isEditing && (
+                        <div className="flex gap-3 pt-4">
+                          <Button
+                            variant="primary"
+                            onClick={handleProfileUpdate}
+                            loading={isLoading}
+                            disabled={isLoading}
+                          >
+                            Save Changes
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            onClick={() => setIsEditing(false)}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </TabPanel>
+
+                  {/* Notifications Tab */}
+                  <TabPanel value={tabValue} index={1}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                      Notification Preferences
+                    </h3>
+
+                    <div className="space-y-4">
+                      {Object.entries(preferences.notifications).map(([key, value]) => (
+                        <label key={key} className="flex items-center justify-between cursor-pointer py-2">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {key === 'email' && 'Receive notifications via email'}
+                              {key === 'push' && 'Receive browser push notifications'}
+                              {key === 'sessionStart' && 'When a session you\'re invited to begins'}
+                              {key === 'sessionEnd' && 'When a session you participated in ends'}
+                              {key === 'mentions' && 'When someone mentions you in a message'}
+                            </p>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setPreferences({
+                              ...preferences,
+                              notifications: { ...preferences.notifications, [key]: e.target.checked }
+                            })}
+                            className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </TabPanel>
+
+                  {/* Security Tab */}
+                  <TabPanel value={tabValue} index={2}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                      Security Settings
+                    </h3>
+
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="text-base font-medium text-gray-900 mb-4">
+                          Change Password
+                        </h4>
+                        
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Current Password
+                            </label>
+                            <Input
+                              type="password"
+                              value={formData.currentPassword}
+                              onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
+                              placeholder="••••••••"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              New Password
+                            </label>
+                            <Input
+                              type="password"
+                              value={formData.newPassword}
+                              onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                              placeholder="••••••••"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Confirm New Password
+                            </label>
+                            <Input
+                              type="password"
+                              value={formData.confirmPassword}
+                              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                              placeholder="••••••••"
+                            />
+                          </div>
+
+                          <Button
+                            variant="primary"
+                            onClick={handlePasswordChange}
+                            loading={isLoading}
+                            disabled={isLoading}
+                          >
+                            Change Password
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-gray-200 pt-6">
+                        <h4 className="text-base font-medium text-red-600 mb-4">
+                          Danger Zone
+                        </h4>
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                          <p className="text-sm text-red-800">
+                            Deleting your account is permanent and cannot be undone.
+                          </p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          className="text-red-600 border-red-600 hover:bg-red-50"
+                          onClick={() => setShowDeleteDialog(true)}
+                        >
+                          <DeleteIcon className="w-4 h-4 mr-2" />
+                          Delete Account
+                        </Button>
+                      </div>
+                    </div>
+                  </TabPanel>
+
+                  {/* Appearance Tab */}
+                  <TabPanel value={tabValue} index={3}>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                      Appearance Settings
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between py-2">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">Theme</p>
+                          <p className="text-sm text-gray-600">Choose your preferred color scheme</p>
+                        </div>
+                        <Badge 
+                          variant="secondary"
+                          className="cursor-pointer"
+                          onClick={() => {
+                            const themes = ['light', 'dark', 'system'];
+                            const currentIndex = themes.indexOf(preferences.theme);
+                            const nextTheme = themes[(currentIndex + 1) % themes.length];
+                            setPreferences({ ...preferences, theme: nextTheme });
+                          }}
+                        >
+                          {preferences.theme}
+                        </Badge>
+                      </div>
+
+                      {Object.entries(preferences.accessibility).map(([key, value]) => (
+                        <label key={key} className="flex items-center justify-between cursor-pointer py-2">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {key === 'reducedMotion' && 'Minimize animations and transitions'}
+                              {key === 'highContrast' && 'Increase contrast for better visibility'}
+                            </p>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={value}
+                            onChange={(e) => setPreferences({
+                              ...preferences,
+                              accessibility: { ...preferences.accessibility, [key]: e.target.checked }
+                            })}
+                            className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </TabPanel>
+                </CardBody>
+              </Card>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Delete Account Dialog */}
+        {showDeleteDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white rounded-lg max-w-md w-full p-6"
+            >
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Delete Account</h3>
+              
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-red-800 font-medium">This action cannot be undone!</p>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-4">
+                Are you sure you want to delete your account? All your data, including:
+              </p>
+              
+              <ul className="list-disc list-inside text-sm text-gray-600 mb-6 space-y-1">
+                <li>All created sessions</li>
+                <li>Message history</li>
+                <li>Analytics data</li>
+                <li>Account settings</li>
+              </ul>
+              
+              <p className="text-sm text-gray-600 mb-6">will be permanently deleted.</p>
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="ghost"
+                  fullWidth
+                  onClick={() => setShowDeleteDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  fullWidth
+                  onClick={handleDeleteAccount}
+                  loading={isLoading}
+                  disabled={isLoading}
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  Delete Account
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

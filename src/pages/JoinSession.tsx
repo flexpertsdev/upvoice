@@ -1,247 +1,153 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Box,
-  CircularProgress,
-  Alert,
-  Divider,
-  Avatar,
-  Chip,
-  useTheme,
-  alpha,
-} from '@mui/material';
-import { motion } from 'framer-motion';
-import { PersonIcon, ArrowForwardIcon, GroupIcon } from '@components/icons';
-import { useSession } from '@hooks/useSession';
-import { useAuthStore } from '@stores/auth.store';
-import { LoadingScreen } from '@components/common/LoadingScreen';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button, Input, Card, CardHeader, CardBody } from '@components/ui';
+import { ArrowForwardIcon, UsersIcon } from '@components/icons';
 
-export const JoinSession: React.FC = () => {
-  const { code } = useParams<{ code?: string }>();
+const JoinSession: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const { user, anonymousUser, signInAnonymously } = useAuthStore();
-  const { session, joinSession, isJoining, error, loadSession } = useSession();
-
+  const { sessionCode: urlSessionCode } = useParams();
+  const [sessionCode, setSessionCode] = useState(urlSessionCode || '');
   const [displayName, setDisplayName] = useState('');
-  const [sessionCode, setSessionCode] = useState(code || '');
-  const [isLoadingSession, setIsLoadingSession] = useState(!!code);
-  const [sessionError, setSessionError] = useState<string | null>(null);
+  const [isJoining, setIsJoining] = useState(false);
+  const [error, setError] = useState('');
 
-  // Load session details if code provided
   useEffect(() => {
-    if (code) {
-      loadSessionByCode();
+    // Check if user already has a display name in localStorage
+    const savedName = localStorage.getItem('displayName');
+    if (savedName) {
+      setDisplayName(savedName);
     }
-  }, [code]);
+  }, []);
 
-  const loadSessionByCode = async () => {
+  const handleJoinSession = async () => {
+    // Validate inputs
+    if (!sessionCode.trim()) {
+      setError('Please enter a session code');
+      return;
+    }
+
+    setIsJoining(true);
+    setError('');
+
     try {
-      setIsLoadingSession(true);
-      setSessionError(null);
-      const loaded = await loadSession(code!);
-      if (!loaded) {
-        setSessionError('Session not found or has ended');
+      // For now, we'll simulate session joining with local storage
+      const participantId = `participant_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Save participant info
+      localStorage.setItem('participantId', participantId);
+      localStorage.setItem('displayName', displayName || 'Anonymous');
+      localStorage.setItem('currentSessionCode', sessionCode.toUpperCase());
+      
+      // Simulate joining a session (in real app, this would check Firebase)
+      // For demo, we'll create a mock session if it doesn't exist
+      const sessions = JSON.parse(localStorage.getItem('sessions') || '{}');
+      if (!sessions[sessionCode.toUpperCase()]) {
+        // Create a demo session
+        sessions[sessionCode.toUpperCase()] = {
+          id: sessionCode.toUpperCase(),
+          name: `Session ${sessionCode.toUpperCase()}`,
+          currentTopic: 'Welcome! Share your thoughts on today\'s topic.',
+          participantCount: 1,
+          isActive: true,
+          createdAt: Date.now()
+        };
+        localStorage.setItem('sessions', JSON.stringify(sessions));
       }
+
+      // Navigate to active session
+      setTimeout(() => {
+        navigate(`/session/${sessionCode.toUpperCase()}`);
+      }, 500);
     } catch (err) {
-      setSessionError('Failed to load session details');
-    } finally {
-      setIsLoadingSession(false);
+      setError('Failed to join session. Please try again.');
+      setIsJoining(false);
     }
   };
-
-  const handleJoin = async () => {
-    if (!sessionCode.trim()) return;
-
-    // Ensure user is authenticated (anonymous or regular)
-    if (!user && !anonymousUser) {
-      await signInAnonymously();
-    }
-
-    // Use display name or fallback
-    const name = displayName.trim() || 
-      user?.displayName || 
-      `Guest ${Math.floor(Math.random() * 1000)}`;
-
-    const success = await joinSession(sessionCode.trim(), name);
-    
-    if (success) {
-      navigate(`/session/${session?.id || sessionCode}`);
-    }
-  };
-
-  if (isLoadingSession) {
-    return <LoadingScreen message="Loading session details..." />;
-  }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 8 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            borderRadius: 3,
-            background: alpha(theme.palette.background.paper, 0.9),
-            backdropFilter: 'blur(10px)',
-          }}
-        >
-          {/* Header */}
-          <Box sx={{ textAlign: 'center', mb: 4 }}>
-            <Avatar
-              sx={{
-                width: 80,
-                height: 80,
-                mx: 'auto',
-                mb: 2,
-                bgcolor: 'primary.main',
-                background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
-              }}
-            >
-              <GroupIcon sx={{ fontSize: 40 }} />
-            </Avatar>
-            <Typography variant="h4" gutterBottom fontWeight={600}>
-              Join Session
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Enter your details to join the conversation
-            </Typography>
-          </Box>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Join Session</h1>
+          <p className="text-gray-600">Enter the session code to participate</p>
+        </div>
 
-          {/* Session Info (if loaded) */}
-          {session && (
-            <Box
-              sx={{
-                mb: 4,
-                p: 3,
-                bgcolor: alpha(theme.palette.primary.main, 0.05),
-                borderRadius: 2,
-                border: `1px solid ${alpha(theme.palette.primary.main, 0.2)}`,
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                {session.title}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
-                <Chip
-                  size="small"
-                  label={`${session.participantCount || 0} participants`}
-                  icon={<GroupIcon />}
-                />
-                <Chip
-                  size="small"
-                  label={session.status}
-                  color={session.status === 'active' ? 'success' : 'default'}
-                />
-              </Box>
-              {session.description && (
-                <Typography variant="body2" color="text.secondary">
-                  {session.description}
-                </Typography>
-              )}
-            </Box>
-          )}
-
-          {/* Error Alert */}
-          {(error || sessionError) && (
-            <Alert severity="error" sx={{ mb: 3 }}>
-              {error || sessionError}
-            </Alert>
-          )}
-
-          {/* Join Form */}
-          <Box component="form" onSubmit={(e) => { e.preventDefault(); handleJoin(); }}>
-            {/* Session Code (if not from URL) */}
-            {!code && (
-              <TextField
-                fullWidth
-                label="Session Code"
+        <Card>
+          <CardBody className="space-y-6">
+            <div>
+              <label htmlFor="sessionCode" className="block text-sm font-medium text-gray-700 mb-2">
+                Session Code
+              </label>
+              <Input
+                id="sessionCode"
+                type="text"
                 value={sessionCode}
-                onChange={(e) => setSessionCode(e.target.value)}
-                placeholder="Enter 6-digit code"
-                required
-                sx={{ mb: 3 }}
-                inputProps={{
-                  style: { textTransform: 'uppercase' },
-                  maxLength: 6,
-                }}
+                onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
+                placeholder="e.g., ABC123"
+                className="text-center text-xl font-mono uppercase"
+                maxLength={6}
+                disabled={isJoining}
               />
+            </div>
+
+            <div>
+              <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-2">
+                Your Name (Optional)
+              </label>
+              <Input
+                id="displayName"
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Anonymous"
+                disabled={isJoining}
+              />
+              <p className="mt-1 text-sm text-gray-500">
+                This will be shown to the moderator only
+              </p>
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
             )}
 
-            {/* Display Name */}
-            <TextField
-              fullWidth
-              label="Your Name"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder={user ? user.displayName || 'Enter your name' : 'Enter your name'}
-              sx={{ mb: 3 }}
-              InputProps={{
-                startAdornment: <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-              }}
-              helperText={!displayName && 'Leave empty to join anonymously'}
-            />
-
-            {/* Join Button */}
             <Button
+              variant="primary"
+              size="lg"
               fullWidth
-              variant="contained"
-              size="large"
-              onClick={handleJoin}
-              disabled={isJoining || !sessionCode.trim()}
-              endIcon={isJoining ? null : <ArrowForwardIcon />}
-              sx={{ py: 1.5, mb: 3 }}
+              onClick={handleJoinSession}
+              loading={isJoining}
+              className="flex items-center justify-center gap-2"
             >
-              {isJoining ? (
-                <>
-                  <CircularProgress size={20} sx={{ mr: 1 }} />
-                  Joining...
-                </>
-              ) : (
-                'Join Session'
-              )}
+              {isJoining ? 'Joining...' : 'Join Session'}
+              {!isJoining && <ArrowForwardIcon className="w-5 h-5" />}
             </Button>
 
-            <Divider sx={{ my: 3 }}>OR</Divider>
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Don't have a session code?{' '}
+                <button
+                  onClick={() => navigate('/create')}
+                  className="text-primary-600 hover:text-primary-700 font-medium"
+                  disabled={isJoining}
+                >
+                  Create a session
+                </button>
+              </p>
+            </div>
+          </CardBody>
+        </Card>
 
-            {/* Alternative Actions */}
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => navigate('/create')}
-              >
-                Create Session
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => navigate('/')}
-              >
-                Back to Home
-              </Button>
-            </Box>
-          </Box>
-
-          {/* Privacy Note */}
-          <Box sx={{ mt: 4, p: 2, bgcolor: alpha(theme.palette.info.main, 0.05), borderRadius: 1 }}>
-            <Typography variant="caption" color="text.secondary">
-              = Your privacy is protected. You can join anonymously or with just a display name. 
-              No personal information is required.
-            </Typography>
-          </Box>
-        </Paper>
-      </motion.div>
-    </Container>
+        <div className="mt-8 text-center">
+          <div className="inline-flex items-center gap-2 text-sm text-gray-500">
+            <UsersIcon className="w-4 h-4" />
+            <span>Your identity will remain anonymous to other participants</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

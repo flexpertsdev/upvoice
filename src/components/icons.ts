@@ -115,6 +115,8 @@ export {
   LayersTwo01 as Layers01,
   Package as PackageIcon,
   Feather as FeatherIcon,
+  Eye as EyeIcon,
+  EyeOff as EyeOffIcon,
   Mail01 as GoogleIcon,
   Cloud01 as MicrosoftIcon,
   

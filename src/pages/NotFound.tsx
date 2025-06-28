@@ -1,12 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Button,
-  Box,
-  useTheme,
-} from '@mui/material';
+import { Button } from '@components/ui';
 import { motion } from 'framer-motion';
 import {
   HomeIcon,
@@ -14,9 +8,8 @@ import {
   ArrowBackIcon,
 } from '@components/icons';
 
-export const NotFound: React.FC = () => {
+const NotFound: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
 
   const handleGoHome = () => {
     navigate('/');
@@ -27,212 +20,154 @@ export const NotFound: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 8 }}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <Box
-          sx={{
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '60vh',
-          }}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+      <div className="max-w-2xl w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          {/* Animated 404 */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: { xs: '6rem', sm: '8rem', md: '10rem' },
-                fontWeight: 800,
-                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                backgroundClip: 'text',
-                textFillColor: 'transparent',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: 2,
-              }}
-            >
-              404
-            </Typography>
-          </motion.div>
-
-          {/* Error Message */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-          >
-            <Typography variant="h4" gutterBottom fontWeight={600}>
-              Oops! Page not found
-            </Typography>
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              paragraph
-              sx={{ maxWidth: 500, mx: 'auto' }}
-            >
-              The page you're looking for doesn't exist. It might have been moved, 
-              deleted, or you may have mistyped the URL.
-            </Typography>
-          </motion.div>
-
-          {/* Floating Elements Animation */}
-          <Box sx={{ position: 'relative', height: 100, width: '100%', my: 4 }}>
+          <div className="text-center">
+            {/* Animated 404 */}
             <motion.div
-              style={{
-                position: 'absolute',
-                left: '20%',
-                top: '20%',
-              }}
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, 0],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
             >
-              <SearchIcon
-                sx={{
-                  fontSize: 40,
-                  color: theme.palette.primary.light,
-                  opacity: 0.5,
-                }}
-              />
+              <h1 className="text-8xl md:text-9xl font-extrabold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent mb-4">
+                404
+              </h1>
             </motion.div>
 
+            {/* Error Message */}
             <motion.div
-              style={{
-                position: 'absolute',
-                right: '20%',
-                top: '40%',
-              }}
-              animate={{
-                y: [0, 10, 0],
-                rotate: [0, -5, 0],
-              }}
-              transition={{
-                duration: 3.5,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: 0.5,
-              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
             >
-              <HomeIcon
-                sx={{
-                  fontSize: 35,
-                  color: theme.palette.secondary.light,
-                  opacity: 0.5,
-                }}
-              />
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Oops! Page not found
+              </h2>
+              <p className="text-gray-600 max-w-md mx-auto mb-8">
+                The page you're looking for doesn't exist. It might have been moved, 
+                deleted, or you may have mistyped the URL.
+              </p>
             </motion.div>
 
-            <motion.div
-              style={{
-                position: 'absolute',
-                left: '50%',
-                top: '60%',
-                transform: 'translateX(-50%)',
-              }}
-              animate={{
-                y: [0, -8, 0],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: 1,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: '50%',
-                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  opacity: 0.2,
+            {/* Floating Elements Animation */}
+            <div className="relative h-24 w-full my-8">
+              <motion.div
+                className="absolute left-[20%] top-[20%]"
+                animate={{
+                  y: [0, -10, 0],
+                  rotate: [0, 5, 0],
                 }}
-              />
-            </motion.div>
-          </Box>
-
-          {/* Action Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-          >
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 4 }}>
-              <Button
-                variant="outlined"
-                size="large"
-                startIcon={<ArrowBackIcon />}
-                onClick={handleGoBack}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
               >
-                Go Back
-              </Button>
-              <Button
-                variant="contained"
-                size="large"
-                startIcon={<HomeIcon />}
-                onClick={handleGoHome}
-              >
-                Go Home
-              </Button>
-            </Box>
-          </motion.div>
+                <SearchIcon className="w-10 h-10 text-primary-400 opacity-50" />
+              </motion.div>
 
-          {/* Help Text */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-          >
-            <Box sx={{ mt: 6 }}>
-              <Typography variant="body2" color="text.secondary">
-                Need help? You can:
-              </Typography>
-              <Box sx={{ mt: 2, display: 'flex', gap: 3, justifyContent: 'center' }}>
+              <motion.div
+                className="absolute right-[20%] top-[40%]"
+                animate={{
+                  y: [0, 10, 0],
+                  rotate: [0, -5, 0],
+                }}
+                transition={{
+                  duration: 3.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 0.5,
+                }}
+              >
+                <HomeIcon className="w-9 h-9 text-primary-500 opacity-50" />
+              </motion.div>
+
+              <motion.div
+                className="absolute left-1/2 top-[60%] -translate-x-1/2"
+                animate={{
+                  y: [0, -8, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: 1,
+                }}
+              >
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 opacity-20" />
+              </motion.div>
+            </div>
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
+            >
+              <div className="flex gap-4 justify-center mt-8">
                 <Button
-                  size="small"
-                  onClick={() => navigate('/dashboard')}
-                  sx={{ textTransform: 'none' }}
+                  variant="outline"
+                  size="lg"
+                  onClick={handleGoBack}
+                  className="flex items-center gap-2"
                 >
-                  View Dashboard
+                  <ArrowBackIcon className="w-5 h-5" />
+                  Go Back
                 </Button>
                 <Button
-                  size="small"
-                  onClick={() => navigate('/create')}
-                  sx={{ textTransform: 'none' }}
+                  variant="primary"
+                  size="lg"
+                  onClick={handleGoHome}
+                  className="flex items-center gap-2"
                 >
-                  Create Session
+                  <HomeIcon className="w-5 h-5" />
+                  Go Home
                 </Button>
-                <Button
-                  size="small"
-                  onClick={() => navigate('/join')}
-                  sx={{ textTransform: 'none' }}
-                >
-                  Join Session
-                </Button>
-              </Box>
-            </Box>
-          </motion.div>
-        </Box>
-      </motion.div>
-    </Container>
+              </div>
+            </motion.div>
+
+            {/* Help Text */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8, duration: 0.5 }}
+            >
+              <div className="mt-12">
+                <p className="text-sm text-gray-600 mb-4">
+                  Need help? You can:
+                </p>
+                <div className="flex gap-6 justify-center flex-wrap">
+                  <button
+                    onClick={() => navigate('/dashboard')}
+                    className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    View Dashboard
+                  </button>
+                  <button
+                    onClick={() => navigate('/create')}
+                    className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Create Session
+                  </button>
+                  <button
+                    onClick={() => navigate('/join')}
+                    className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Join Session
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 };
 
