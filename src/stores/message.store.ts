@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { produce } from 'immer';
 import { messageService } from '@services/message.service';
-import type { Message, MessageFilter, MessageStats, Vote, RingPosition } from '@types';
+import type { Message, MessageFilter, MessageStats, Vote, RingPosition } from '@/types';
 
 interface MessageState {
   // Messages

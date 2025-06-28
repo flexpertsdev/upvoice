@@ -1,12 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User } from '@untitled-ui/icons-react';
-import { Participant } from '@types';
+import { User01 as User } from '@untitled-ui/icons-react';
+import type { Participant } from '@/types';
 import { Avatar, AvatarProps } from '@components/ui';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-interface ParticipantAvatarProps extends Omit<AvatarProps, 'src' | 'alt'> {
+export interface ParticipantAvatarProps extends Omit<AvatarProps, 'src' | 'alt'> {
   participant: Participant;
   showStatus?: boolean;
   showRole?: boolean;
@@ -31,12 +31,12 @@ export const ParticipantAvatar: React.FC<ParticipantAvatarProps> = ({
   const getParticipantColor = (id: string) => {
     const colors = [
       theme.colors.primary[500],
-      theme.colors.secondary[500],
+      theme.colors.gray[500],
       theme.colors.success[500],
       theme.colors.warning[500],
       theme.colors.error[500],
       theme.colors.primary[600],
-      theme.colors.secondary[600],
+      theme.colors.gray[600],
     ];
     
     // Simple hash function to get consistent color
@@ -251,6 +251,7 @@ export const getParticipantAvatarStyles = (size: AvatarProps['size'] = 'md') => 
     md: 40,
     lg: 48,
     xl: 64,
+    '2xl': 96,
   };
 
   return {

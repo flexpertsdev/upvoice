@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Message, MessageMetadata } from '@types';
+import { Message, MessageMetadata } from '@/types';
 import { messageService } from '@services/message.service';
 import { useSessionStore } from '@stores/session.store';
 import { useAuthStore } from '@stores/auth.store';
@@ -13,9 +13,9 @@ interface UseMessagesOptions {
 }
 
 export const useMessages = (options: UseMessagesOptions = {}) => {
-  const { session } = useSessionStore();
+  const { currentSession } = useSessionStore();
   const { user, anonymousUser } = useAuthStore();
-  const sessionId = options.sessionId || session?.id;
+  const sessionId = options.sessionId || currentSession?.id;
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);

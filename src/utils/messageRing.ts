@@ -1,4 +1,4 @@
-import { Message, Participant } from '@types';
+import { Message, Participant } from '@/types';
 import { doc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db, COLLECTIONS } from '@config/firebase';
 

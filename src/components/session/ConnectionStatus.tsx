@@ -4,15 +4,16 @@ import {
   Wifi, 
   WifiOff, 
   AlertCircle, 
-  RefreshCw,
-  Check
+  RefreshCw01 as RefreshCw,
+  Check,
+  X as CloseIcon
 } from '@untitled-ui/icons-react';
 import { Badge, Button } from '@components/ui';
 import { useConnectionStatus } from '@hooks/useConnectionStatus';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-interface ConnectionStatusProps {
+export interface ConnectionStatusProps {
   size?: 'sm' | 'md' | 'lg';
   showDetails?: boolean;
   showReconnect?: boolean;
@@ -345,7 +346,7 @@ export const ConnectionBanner: React.FC<ConnectionBannerProps> = ({
             onClick={handleDismiss}
             className="text-gray-400 hover:text-gray-600"
           >
-            <X className="w-5 h-5" />
+            <CloseIcon className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -367,8 +368,8 @@ export const getConnectionStatusStyles = () => ({
   badge: {
     display: 'flex',
     alignItems: 'center',
-    gap: theme.spacing[1.5],
-    padding: `${theme.spacing[1]} ${theme.spacing[2.5]}`,
+    gap: theme.spacing[2],
+    padding: `${theme.spacing[1]} ${theme.spacing[3]}`,
     borderRadius: theme.borderRadius.full,
     fontSize: theme.typography.fontSize.sm,
   },

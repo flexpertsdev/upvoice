@@ -24,7 +24,7 @@
  * - components/*: Component usage
  */
 
-import { createTheme } from '@untitled-ui/react'
+// import { createTheme } from '@untitled-ui/react' // Package not installed yet
 
 // Brand colors
 const colors = {

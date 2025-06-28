@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Participant, ParticipantRole } from '@types';
+import { Participant, ParticipantRole } from '@/types';
 import { sessionService } from '@services/session.service';
 import { useSessionStore } from '@stores/session.store';
 import { useAuthStore } from '@stores/auth.store';

@@ -36,7 +36,7 @@ import {
 } from '@components/icons';
 import { useSession } from '@hooks/useSession';
 import { useAuthStore } from '@stores/auth.store';
-import { SessionSettings, SessionType } from '@types';
+import { SessionSettings, SessionType } from '@/types';
 import toast from 'react-hot-toast';
 
 const steps = ['Basic Info', 'Settings', 'Review & Create'];
@@ -477,3 +477,5 @@ export const CreateSession: React.FC = () => {
     </Container>
   );
 };
+
+export default CreateSession;

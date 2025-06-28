@@ -190,7 +190,7 @@ Textarea.displayName = 'Textarea';
 export const getInputStyles = (hasError: boolean) => ({
   input: {
     width: '100%',
-    padding: `${theme.spacing[2.5]} ${theme.spacing[3.5]}`,
+    padding: `0.625rem 0.875rem`, // 10px 14px
     fontSize: theme.typography.fontSize.base,
     lineHeight: theme.typography.lineHeight.base,
     color: theme.colors.gray[900],
@@ -221,11 +221,11 @@ export const getInputStyles = (hasError: boolean) => ({
     fontSize: theme.typography.fontSize.sm,
     fontWeight: theme.typography.fontWeight.medium,
     color: theme.colors.gray[700],
-    marginBottom: theme.spacing[1.5],
+    marginBottom: '0.375rem', // 6px = 1.5 * 4px
   },
   
   helperText: {
-    marginTop: theme.spacing[1.5],
+    marginTop: '0.375rem', // 6px = 1.5 * 4px
     fontSize: theme.typography.fontSize.sm,
     color: hasError ? theme.colors.error[600] : theme.colors.gray[500],
   },

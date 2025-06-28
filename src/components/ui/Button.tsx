@@ -189,10 +189,10 @@ const getButtonStyles = (props: ButtonProps) => {
     sm: {
       padding: `${theme.spacing[2]} ${theme.spacing[3]}`,
       fontSize: theme.typography.fontSize.sm,
-      gap: theme.spacing[1.5],
+      gap: '0.375rem', // 6px = 1.5 * 4px
     },
     md: {
-      padding: `${theme.spacing[2.5]} ${theme.spacing[4]}`,
+      padding: `0.625rem ${theme.spacing[4]}`, // 10px 16px
       fontSize: theme.typography.fontSize.sm,
       gap: theme.spacing[2],
     },
@@ -202,9 +202,9 @@ const getButtonStyles = (props: ButtonProps) => {
       gap: theme.spacing[2],
     },
     xl: {
-      padding: `${theme.spacing[3.5]} ${theme.spacing[6]}`,
+      padding: `0.875rem ${theme.spacing[6]}`, // 14px 24px
       fontSize: theme.typography.fontSize.base,
-      gap: theme.spacing[2.5],
+      gap: '0.625rem', // 10px = 2.5 * 4px
     },
   };
 

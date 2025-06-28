@@ -27,7 +27,7 @@ import type {
   RingPosition,
   MessageType,
   MessageStatus
-} from '@types';
+} from '@/types';
 
 class MessageService {
   private rateLimitMap = new Map<string, number[]>();

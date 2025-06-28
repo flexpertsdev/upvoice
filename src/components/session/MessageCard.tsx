@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, MoreHorizontal, Flag, Share } from '@untitled-ui/icons-react';
+import { Heart, MessageCircle01 as MessageCircle, DotsHorizontal as MoreHorizontal, Flag01 as Flag, Share01 as Share } from '@untitled-ui/icons-react';
 import { formatDistanceToNow } from 'date-fns';
-import { Message, Vote } from '@types';
+import type { Message, Participant } from '@/types';
 import { Card, CardBody, Badge, Button } from '@components/ui';
 import { ParticipantAvatar } from './ParticipantAvatar';
 import { VoteSlider } from './VoteSlider';
-import { useSessionStore } from '@stores/session.store';
 import { useAuthStore } from '@stores/auth.store';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-interface MessageCardProps {
+export interface MessageCardProps {
   message: Message;
   isHighlighted?: boolean;
   onVote?: (value: number) => void;
@@ -37,7 +36,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
   const [localVote, setLocalVote] = useState<number | null>(null);
 
   // Get user's vote for this message
-  const userVote = message.votes?.find(v => v.userId === currentUserId);
+  const userVote = message.votes?.find(v => v.participantId === currentUserId);
   const hasVoted = !!userVote;
   const currentVoteValue = userVote?.value ?? localVote;
 
@@ -86,13 +85,12 @@ export const MessageCard: React.FC<MessageCardProps> = ({
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-3">
               <ParticipantAvatar
-                participant={message.participant}
+                participant={{ id: message.participantId, displayName: 'User', status: 'active', role: 'participant' } as Participant}
                 size="md"
-                showInitials
               />
               <div>
                 <h4 className="text-sm font-medium text-gray-900">
-                  {message.participant.displayName}
+                  User
                 </h4>
                 <p className="text-xs text-gray-500">
                   {formatDistanceToNow(message.timestamp, { addSuffix: true })}
@@ -164,7 +162,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
             <p className="text-gray-900 whitespace-pre-wrap">{message.content}</p>
             
             {/* Parent message reference */}
-            {message.parentMessageId && (
+            {message.parentId && (
               <div className="mt-3 pl-3 border-l-2 border-gray-200">
                 <p className="text-sm text-gray-500 italic">
                   Replying to a previous message
@@ -174,15 +172,15 @@ export const MessageCard: React.FC<MessageCardProps> = ({
           </div>
 
           {/* Metadata */}
-          {message.metadata && (
+          {(message.sentiment || message.topics) && (
             <div className="flex flex-wrap gap-2 mb-4">
-              {message.metadata.sentiment && (
-                <Badge variant="outline" size="sm">
-                  Sentiment: {message.metadata.sentiment}
+              {message.sentiment && (
+                <Badge variant="gray" size="sm">
+                  Sentiment: {message.sentiment}
                 </Badge>
               )}
-              {message.metadata.topics?.map((topic, i) => (
-                <Badge key={i} variant="secondary" size="sm">
+              {message.topics?.map((topic: string, i: number) => (
+                <Badge key={i} variant="gray" size="sm">
                   {topic}
                 </Badge>
               ))}
@@ -215,7 +213,7 @@ export const MessageCard: React.FC<MessageCardProps> = ({
               {/* Vote button */}
               {!hasVoted && !isVoting && onVote && (
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setIsVoting(true)}
                 >

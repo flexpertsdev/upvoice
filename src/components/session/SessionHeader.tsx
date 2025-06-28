@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Copy, 
-  Share, 
-  Settings, 
-  Users, 
-  Info,
+  Copy01 as Copy, 
+  Share01 as Share, 
+  Settings01 as Settings, 
+  Users01 as Users, 
+  InfoCircle as Info,
   ChevronDown,
-  LogOut,
-  MoreHorizontal
+  LogOut01 as LogOut,
+  DotsHorizontal as MoreHorizontal
 } from '@untitled-ui/icons-react';
-import { Session } from '@types';
+import { SessionSettings } from '@/types';
 import { Button, Badge } from '@components/ui';
 import { ParticipantAvatarGroup } from './ParticipantAvatar';
 import { SessionTimer } from './SessionTimer';
@@ -20,8 +20,8 @@ import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 import toast from 'react-hot-toast';
 
-interface SessionHeaderProps {
-  session: Session;
+export interface SessionHeaderProps {
+  session: SessionSettings;
   onSettings?: () => void;
   onInfo?: () => void;
   onLeave?: () => void;
@@ -152,7 +152,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
             {/* Share button with dropdown */}
             <div className="relative">
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={() => setShowShareMenu(!showShareMenu)}
               >
@@ -190,7 +190,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
 
             {onInfo && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={onInfo}
               >
@@ -200,7 +200,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
 
             {onSettings && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={onSettings}
               >
@@ -210,7 +210,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
 
             {onLeave && (
               <Button
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 onClick={onLeave}
                 className="text-error-600 hover:bg-error-50 border-error-200"
@@ -228,7 +228,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
             )}
             
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={() => setShowMobileMenu(!showMobileMenu)}
             >
@@ -260,7 +260,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
               {/* Mobile actions */}
               <div className="grid grid-cols-2 gap-2">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={handleShare}
                   className="justify-center"
@@ -271,7 +271,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
                 
                 {onInfo && (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={onInfo}
                     className="justify-center"
@@ -283,7 +283,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
                 
                 {onSettings && (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={onSettings}
                     className="justify-center"
@@ -295,7 +295,7 @@ export const SessionHeader: React.FC<SessionHeaderProps> = ({
                 
                 {onLeave && (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={onLeave}
                     className="justify-center text-error-600 hover:bg-error-50 border-error-200"

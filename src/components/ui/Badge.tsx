@@ -167,19 +167,19 @@ export const getBadgeStyles = (
 
   const sizes = {
     sm: {
-      padding: `${theme.spacing[0.5]} ${theme.spacing[2]}`,
+      padding: `0.125rem ${theme.spacing[2]}`, // 2px 8px
       fontSize: theme.typography.fontSize.xs,
       gap: theme.spacing[1],
     },
     md: {
-      padding: `${theme.spacing[1]} ${theme.spacing[2.5]}`,
+      padding: `${theme.spacing[1]} 0.625rem`, // 4px 10px
       fontSize: theme.typography.fontSize.sm,
-      gap: theme.spacing[1.5],
+      gap: '0.375rem', // 6px = 1.5 * 4px
     },
     lg: {
-      padding: `${theme.spacing[1.5]} ${theme.spacing[3]}`,
+      padding: `0.375rem ${theme.spacing[3]}`, // 6px 12px
       fontSize: theme.typography.fontSize.sm,
-      gap: theme.spacing[1.5],
+      gap: '0.375rem', // 6px = 1.5 * 4px
     },
   };
 

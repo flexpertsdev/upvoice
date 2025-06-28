@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Vote, Message } from '@types';
+import { Vote, Message } from '@/types';
 import { voteService } from '@services/vote.service';
 import { useAuthStore } from '@stores/auth.store';
 import { useSessionStore } from '@stores/session.store';

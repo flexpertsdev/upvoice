@@ -321,3 +321,5 @@ export const ActiveSession: React.FC = () => {
     </Box>
   );
 };
+
+export default ActiveSession;

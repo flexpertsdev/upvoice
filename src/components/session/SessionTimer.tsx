@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Pause, Play } from '@untitled-ui/icons-react';
+import { Clock, PauseCircle as Pause, PlayCircle as Play } from '@untitled-ui/icons-react';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-interface SessionTimerProps {
+export interface SessionTimerProps {
   startTime: Date;
   endTime?: Date;
   isPaused?: boolean;
@@ -26,8 +26,8 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
     if (isPaused || endTime) return;
 
     const updateTimer = () => {
-      const now = endTime ? endTime.getTime() : Date.now();
-      const start = startTime.getTime();
+      const now = Date.now();
+      const start = startTime instanceof Date ? startTime.getTime() : new Date(startTime).getTime();
       setElapsed(Math.floor((now - start) / 1000));
     };
 
@@ -85,7 +85,7 @@ export const SessionTimer: React.FC<SessionTimerProps> = ({
 };
 
 // Countdown timer component
-interface CountdownTimerProps {
+export interface CountdownTimerProps {
   targetTime: Date;
   onComplete?: () => void;
   showIcon?: boolean;
@@ -248,7 +248,7 @@ export const getSessionTimerStyles = () => ({
   container: {
     display: 'flex',
     alignItems: 'center',
-    gap: theme.spacing[1.5],
+    gap: '0.375rem', // 6px = 1.5 * 4px
   },
   icon: {
     width: '16px',

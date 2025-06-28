@@ -39,7 +39,7 @@ import {
 import { useAuthStore } from '@stores/auth.store';
 import { useSessionStore } from '@stores/session.store';
 import { formatDistanceToNow } from 'date-fns';
-import type { SessionListItem } from '@types';
+import type { SessionListItem } from '@/types';
 import toast from 'react-hot-toast';
 
 interface TabPanelProps {

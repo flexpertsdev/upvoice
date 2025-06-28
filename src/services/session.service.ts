@@ -22,7 +22,7 @@ import type {
   Participant,
   SessionListItem,
   SessionStatus
-} from '@types';
+} from '@/types';
 
 class SessionService {
   /**

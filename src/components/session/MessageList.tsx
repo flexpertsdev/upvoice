@@ -1,15 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowDown } from '@untitled-ui/icons-react';
-import { Message } from '@types';
+import { Message } from '@/types';
 import { MessageCard } from './MessageCard';
 import { EmptyState } from './EmptyState';
 import { Loading, Button } from '@components/ui';
-import { useSessionStore } from '@stores/session.store';
+// import { useSessionStore } from '@stores/session.store';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-interface MessageListProps {
+export interface MessageListProps {
   messages: Message[];
   isLoading?: boolean;
   onVote?: (messageId: string, value: number) => void;

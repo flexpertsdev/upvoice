@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, COLLECTIONS } from '@config/firebase';
-import type { User, AnonymousUser } from '@types';
+import type { User, AnonymousUser } from '@/types';
 
 class AuthService {
   private currentUser: FirebaseUser | null = null;

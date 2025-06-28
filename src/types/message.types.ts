@@ -84,3 +84,11 @@ export interface RingPosition {
   position: number;
   totalParticipants: number;
 }
+
+export interface MessageMetadata {
+  messageId: string;
+  sessionId: string;
+  createdAt: Date;
+  propagatedTo: string[]; // List of participant IDs that have received this message
+  acknowledgedBy: string[]; // List of participant IDs that have acknowledged receipt
+}

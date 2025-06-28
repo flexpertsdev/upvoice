@@ -44,7 +44,7 @@ import {
 } from '@components/icons';
 import { useAuthStore } from '@stores/auth.store';
 import { useForm } from '@hooks/useForm';
-import type { UserPreferences } from '@types';
+import type { UserPreferences } from '@/types';
 import toast from 'react-hot-toast';
 
 interface TabPanelProps {

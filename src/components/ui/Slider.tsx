@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-export interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange'> {
+export interface SliderProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'onChange' | 'size'> {
   min?: number;
   max?: number;
   step?: number;

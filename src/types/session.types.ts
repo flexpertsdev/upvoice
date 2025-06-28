@@ -2,9 +2,11 @@ import { Message } from './message.types';
 
 export interface SessionSettings {
   id: string;
+  code: string; // Session join code
   title: string;
   description?: string;
-  startTime: Date;
+  status: SessionStatus; // Current session status
+  startTime?: Date;
   endTime?: Date;
   isActive: boolean;
   maxParticipants?: number;
@@ -56,6 +58,9 @@ export interface Participant {
   messageCount: number;
   voteCount: number;
   connectionId?: string;
+  avatarUrl?: string;
+  status?: 'active' | 'inactive';
+  role?: 'participant' | 'moderator';
 }
 
 export interface SessionExport {
@@ -67,7 +72,9 @@ export interface SessionExport {
   exportedBy: string;
 }
 
-export type SessionStatus = 'scheduled' | 'active' | 'paused' | 'ended' | 'archived';
+export type SessionStatus = 'scheduled' | 'active' | 'paused' | 'completed' | 'ended' | 'archived';
+
+export type ParticipantRole = 'participant' | 'moderator' | 'host';
 
 export interface SessionListItem {
   id: string;

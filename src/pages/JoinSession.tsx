@@ -244,3 +244,5 @@ export const JoinSession: React.FC = () => {
     </Container>
   );
 };
+
+export default JoinSession;

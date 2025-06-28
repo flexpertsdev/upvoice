@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from '@untitled-ui/icons-react';
+import { X, CheckCircle, AlertCircle, AlertTriangle, InfoCircle as Info } from '@untitled-ui/icons-react';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 

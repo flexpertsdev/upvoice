@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Session, SessionSettings, Participant } from '@types';
+import { Session, SessionSettings, Participant } from '@/types';
 import { sessionService } from '@services/session.service';
 import { useSessionStore } from '@stores/session.store';
 import { useAuthStore } from '@stores/auth.store';

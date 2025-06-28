@@ -57,6 +57,7 @@ export interface AccessibilityPreferences {
 }
 
 export interface AnonymousUser {
+  uid: string; // Anonymous user ID
   sessionId: string;
   displayName: string;
   color: string;

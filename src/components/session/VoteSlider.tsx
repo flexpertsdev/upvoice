@@ -5,7 +5,7 @@ import { Button } from '@components/ui';
 import { cn } from '@utils/cn';
 import { theme } from '@styles/theme';
 
-interface VoteSliderProps {
+export interface VoteSliderProps {
   onVote: (value: number) => void;
   onCancel?: () => void;
   initialValue?: number;
@@ -213,7 +213,7 @@ export const VoteSlider: React.FC<VoteSliderProps> = ({
         </Button>
         {onCancel && (
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={handleCancel}
             className="flex-1"
@@ -254,7 +254,7 @@ export const VotePresets = ({
         {presets.map((preset) => (
           <Button
             key={preset.value}
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={() => onVote(preset.value)}
             className={cn(

@@ -1,12 +1,24 @@
 // Session types
 export type {
   SessionSettings,
+  SessionSettings as Session, // Alias for backward compatibility
   SessionStats,
   Participant,
+  ParticipantRole,
   SessionExport,
   SessionStatus,
   SessionListItem
 } from './session.types';
+
+// Add SessionType enum
+export enum SessionType {
+  presentation = 'presentation',
+  meeting = 'meeting',
+  townhall = 'townhall',
+  classroom = 'classroom',
+  ama = 'ama',
+  custom = 'custom'
+}
 
 // Message types
 export type {
@@ -17,7 +29,8 @@ export type {
   AIFlag,
   MessageFilter,
   MessageStats,
-  RingPosition
+  RingPosition,
+  MessageMetadata
 } from './message.types';
 
 // User types

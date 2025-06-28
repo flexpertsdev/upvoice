@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  MessageSquare, 
-  Users, 
-  FileText, 
-  Search,
+  MessageSquare01 as MessageSquare, 
+  Users01 as Users, 
+  File02 as FileText, 
+  SearchLg as Search,
   Calendar,
   AlertCircle,
   Plus
@@ -15,14 +15,14 @@ import { theme } from '@styles/theme';
 
 type IconType = 'message' | 'users' | 'document' | 'search' | 'calendar' | 'error';
 
-interface EmptyStateProps {
+export interface EmptyStateProps {
   icon?: IconType;
   title: string;
   description?: string;
   action?: {
     label: string;
     onClick: () => void;
-    variant?: 'primary' | 'secondary' | 'outline';
+    variant?: 'primary' | 'secondary' | 'ghost';
   };
   secondaryAction?: {
     label: string;
@@ -190,7 +190,7 @@ export const EmptySearchResults = ({ onClearSearch }: { onClearSearch?: () => vo
         ? {
             label: 'Clear search',
             onClick: onClearSearch,
-            variant: 'outline',
+            variant: 'secondary',
           }
         : undefined
     }
@@ -229,7 +229,7 @@ export const ErrorState = ({
         ? {
             label: 'Try again',
             onClick: onRetry,
-            variant: 'outline',
+            variant: 'secondary',
           }
         : undefined
     }

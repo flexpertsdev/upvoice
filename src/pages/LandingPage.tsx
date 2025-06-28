@@ -321,3 +321,5 @@ export const LandingPage: React.FC = () => {
     </Box>
   );
 };
+
+export default LandingPage;

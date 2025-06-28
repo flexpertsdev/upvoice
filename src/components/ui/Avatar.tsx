@@ -108,7 +108,7 @@ export const Avatar: React.FC<AvatarProps> = ({
         className
       )}
       style={{
-        backgroundColor: !src && getBackgroundColor(),
+        backgroundColor: !src ? getBackgroundColor() : undefined,
         color: !src ? theme.colors.white : undefined,
       }}
       {...props}

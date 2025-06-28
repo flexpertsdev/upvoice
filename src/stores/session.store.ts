@@ -8,7 +8,7 @@ import type {
   Participant,
   SessionListItem,
   Message
-} from '@types';
+} from '@/types';
 
 interface SessionState {
   // Current session
