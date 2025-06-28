@@ -5,25 +5,14 @@ import { Loading } from '@components/ui';
 
 // Import pages directly to avoid lazy loading issues
 import LandingPage from './pages/LandingPage';
-
-// Temporary placeholder components
-const TempPage = ({ title }: { title: string }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
-    <div className="text-center">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">{title}</h1>
-      <p className="text-gray-600">This page is under construction</p>
-    </div>
-  </div>
-);
-
-const JoinSession = () => <TempPage title="Join Session" />;
-const ActiveSession = () => <TempPage title="Active Session" />;
-const CreateSession = () => <TempPage title="Create Session" />;
-const Dashboard = () => <TempPage title="Dashboard" />;
-const Login = () => <TempPage title="Login" />;
-const Register = () => <TempPage title="Register" />;
-const Profile = () => <TempPage title="Profile" />;
-const NotFound = () => <TempPage title="404 - Page Not Found" />;
+import JoinSession from './pages/JoinSession';
+import ActiveSession from './pages/ActiveSession';
+import CreateSession from './pages/CreateSession';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Profile from './pages/Profile';
+import NotFound from './pages/NotFound';
 
 // Protected Route wrapper - simplified for local storage
 interface ProtectedRouteProps {
