@@ -150,4 +150,12 @@ export {
   WifiOff as WifiOff,
   AlertCircle as AlertCircle,
   LogOut01 as ExitIcon,
+  LockUnlocked03 as UnlockIcon,
+  Rocket01 as RocketIcon,
+  Timer as TimerIcon,
+  Clock as TimeIcon,
+  Lightbulb01 as InsightsIcon,
+  Plus as AddIcon,
+  BarChart01 as BarChartIcon,
+  List as ListItemIcon,
 } from '@untitled-ui/icons-react';
