@@ -3,16 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { Loading } from '@components/ui';
 
-// Lazy load pages for code splitting
-const LandingPage = React.lazy(() => import('./pages/LandingPage'));
-// const JoinSession = React.lazy(() => import('./pages/JoinSession'));
-// const ActiveSession = React.lazy(() => import('./pages/ActiveSession'));
-// const CreateSession = React.lazy(() => import('./pages/CreateSession'));
-// const Dashboard = React.lazy(() => import('./pages/Dashboard'));
-// const Login = React.lazy(() => import('./pages/Login'));
-// const Register = React.lazy(() => import('./pages/Register'));
-// const Profile = React.lazy(() => import('./pages/Profile'));
-// const NotFound = React.lazy(() => import('./pages/NotFound'));
+// Import pages directly to avoid lazy loading issues
+import LandingPage from './pages/LandingPage';
 
 // Temporary placeholder components
 const TempPage = ({ title }: { title: string }) => (
@@ -82,8 +74,7 @@ function App() {
   return (
     <>
       <Router>
-        <React.Suspense fallback={<PageLoader />}>
-          <Routes>
+        <Routes>
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/join" element={<JoinSession />} />
@@ -137,7 +128,6 @@ function App() {
             {/* 404 */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </React.Suspense>
       </Router>
       
       {/* Global toast notifications */}
